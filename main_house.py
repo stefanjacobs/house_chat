@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+load_dotenv(".envrc")
+
+
 import os, logging
 
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
