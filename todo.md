@@ -7,7 +7,7 @@
 - [ ] Make tools remote working
 - [ ] Call tools from server in house-app
 - [ ] Research: How to use the bot with another user?
-- [ ] Deployment on Pi Zero
+- [X] Deployment on Pi Zero
 
 ## Optional
 
@@ -19,7 +19,9 @@
 ## Tools
 
 - [X] Energieverbrauch vom Haus
+- [ ] Filter Energy Request for relevant data
 - [X] Wallbox Steuerung
+- [ ] Filter Wallbox Requests for relevant data
 - [ ] Auto API
 - [ ] Tibber API
 - [X] Waschmaschine
@@ -28,4 +30,5 @@
 - [ ] Wetter
 - [ ] Unwettermeldungen
 - [ ] Müllabfuhr-Termine
-- [ ] TODO-Liste API/APP
+- [X] TODO-Liste API/APP
+- [ ] Persist TODO-Liste
