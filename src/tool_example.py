@@ -35,7 +35,9 @@ def set_or_get_wallbox_mode(
         response = requests.get(url)
         r = json.loads(response.text)
         result_mode = r["result"]["loadpoints"][0]["mode"]
-        return {"mode": result_mode}
+        charging = r["result"]["loadpoints"][0]["charging"]
+        charge_power = r["result"]["loadpoints"][0]["chargePower"]
+        return {"mode": result_mode, "charging": str(charging), "charge_power": str(charge_power)}
 
 
 
