@@ -2,7 +2,7 @@ import os, io, json
 import openai
 
 import src.ai_chat_history as ai_chat_history
-from src.tool_example import TOOLS, get_energy_house_data, set_or_get_wallbox_mode, get_dryer_machine_status, get_washing_machine_status, todo_app_api
+from src.tool_example import TOOLS, get_energy_house_data, set_or_get_wallbox_mode, get_wallbox_status, get_dryer_machine_status, get_washing_machine_status, todo_app_api
 
 # OpenAI Client und API Key setzen
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
