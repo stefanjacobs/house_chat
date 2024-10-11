@@ -20,24 +20,24 @@ from typing import Annotated, Optional
 
 def set_or_get_wallbox_mode(
         mode: Annotated[Optional[str], "Einer der folgenden Werte: {'off', 'pv', 'minpv', 'now'}. Dabei bedeutet 'off' das Laden deaktiviert ist, 'pv' das Laden nur mittels PV-Überschuss erfolgt, 'minpv' das Laden mit minimaler Leistung erfolgt, aber mit PV-Überschuss ergänzt wird (sofern vorhanden) und 'now' das Laden sofort mit maximaler Leistung erfolgt."] = None
-    ) -> Annotated[str, "Der aktuelle Modus der Wallbox."]:
+    ) -> Annotated[str, "Der aktuelle Status und Modus der Wallbox."]:
     """
-    Setzt den Modus der Wallbox oder fragt den aktuellen Modus ab, wenn kein Modus übergeben wird.
+    Setzt den Modus der Wallbox oder fragt den aktuellen Status und Modus ab, wenn kein Modus übergeben wird.
     """
     if mode:
         # Wenn ein Modus übergeben wird, setzen wir diesen
         url = EVCC_URI + "/api/loadpoints/1/mode/${MODE}".replace("${MODE}", mode)
         response = requests.post(url)
-        return response.json()
-    else:
-        # Wenn kein Modus übergeben wird, fragen wir den aktuellen Modus ab
-        url = EVCC_URI + "/api/state"
-        response = requests.get(url)
-        r = json.loads(response.text)
-        result_mode = r["result"]["loadpoints"][0]["mode"]
-        charging = r["result"]["loadpoints"][0]["charging"]
-        charge_power = r["result"]["loadpoints"][0]["chargePower"]
-        return {"mode": result_mode, "charging": str(charging), "charge_power": str(charge_power)}
+        response.raise_for_status()
+        # return response.json()
+    # Wenn kein Modus übergeben wird, fragen wir den aktuellen Modus ab
+    url = EVCC_URI + "/api/state"
+    response = requests.get(url)
+    r = json.loads(response.text)
+    result_mode = r["result"]["loadpoints"][0]["mode"]
+    charging = r["result"]["loadpoints"][0]["charging"]
+    charge_power = r["result"]["loadpoints"][0]["chargePower"]
+    return {"mode": result_mode, "charging": str(charging), "charge_power": str(charge_power)}
 
 
 
