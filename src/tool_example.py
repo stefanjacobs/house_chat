@@ -218,4 +218,4 @@ def todo_app_api(
 
 
 generator = ToolDefGenerator()
-TOOLS = generator.generate(get_energy_house_data, set_or_get_wallbox_mode, get_wallbox_status, get_dryer_machine_status, get_washing_machine_status, todo_app_api)
+TOOLS = generator.generate(get_energy_house_data, set_or_get_wallbox_mode, get_wallbox_status, get_dryer_machine_status, get_washing_machine_status, todo_app_api, get_energy_prices)
