@@ -14,6 +14,18 @@ def get_energy_house_data():
     response.raise_for_status()
     return response.json()
 
+def get_energy_prices():
+    """ 
+    Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
+    """
+    url = EVCC_URI + "/api/tariff/grid"
+    response = requests.get(url)
+    response.raise_for_status()
+    response_obj = dict()
+    response_obj["data"]= response.json()
+    response_obj["system-instruction"] = "Please report the local minimum and maximum prices and according time ranges to the user."
+    return response_obj
+
 
 import requests
 from typing import Annotated, Optional
@@ -64,10 +76,10 @@ def get_washing_machine_status():
     washingResponse = json.loads(washingResponse.text)
     washingReading = washingResponse["switch:0"]["apower"]
     if washingReading < 1.0:
-        return "{status: 'off'}"
+        return {"status": "off"}
     if washingReading < 10.0:
-        return "{status: 'idle'}"
-    return "{status: 'washing'}"
+        return {"status": "idle"}
+    return {"status": "washing"}
 
 
 DRY_URI=os.getenv("DRY_URI")
@@ -81,18 +93,17 @@ def get_dryer_machine_status():
     dryerResponse = json.loads(dryerResponse.text)
     dryerReading = dryerResponse["switch:0"]["apower"]
     if dryerReading < 1.0:
-        return "{status: 'off'}"
+        return {"status": "off"}
     if dryerReading < 10.0:
-        return "{status: 'idle'}"
-    return "{status: 'drying'}"
-
+        return {"status": "idle"}
+    return {"status": "drying"}
 
 
 import uuid
 from typing import List, Dict, Optional
 from datetime import datetime
 
-# TODO for later: In-memory storage for todos
+# TODO for later: Not In-memory storage for todos
 todos: Dict[str, List[Dict[str, Optional[str]]]] = {}
 
 # Helper function to generate a unique ID for each todo
