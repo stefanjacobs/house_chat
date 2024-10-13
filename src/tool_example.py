@@ -14,6 +14,7 @@ def get_energy_house_data():
     response.raise_for_status()
     return response.json()
 
+
 def get_energy_prices():
     """ 
     Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
@@ -23,7 +24,8 @@ def get_energy_prices():
     response.raise_for_status()
     response_obj = dict()
     response_obj["data"]= response.json()
-    response_obj["system-instruction"] = "Please report the local minimum and maximum prices and according time ranges to the user."
+    response_obj["current-datetime"] = date
+    response_obj["system-instruction"] = "Please report the local minimum and maximum prices in a range of 2-5 cents and according time ranges to the user for loading the electric vehicle."
     return response_obj
 
 
