@@ -49,12 +49,13 @@ def generate_chat_response(prompt, tools=TOOLS):
                 print(f"Function arguments: {func_args}")
                 # Call the corresponding function that we defined and matches what is in the available functions
                 func_response = json.dumps(globals()[tool_call_name](**func_args))
+                print("Function response: " + str(func_response))
                 # Append the function response directly to messages
                 ai_chat_history.CHAT_HISTORY.append({
                     "role": "tool",
                     "tool_call_id": tool_call_id,
                     "name": tool_call_name,
-                    "content": func_response,
+                    "content": str(func_response),
                 })
                 tool_call_accumulator = ""  # Reset for the next tool call
                 tool_call_name = None

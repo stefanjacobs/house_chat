@@ -19,8 +19,8 @@ def get_energy_prices():
     """ 
     Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
     """
-    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-    current_time = datetime.datetime.now().strftime("%H:%M")
+    current_date = datetime.now().strftime("%Y-%m-%d")
+    current_time = datetime.now().strftime("%H:%M")
     url = EVCC_URI + "/api/tariff/grid"
     response = requests.get(url)
     response.raise_for_status()
