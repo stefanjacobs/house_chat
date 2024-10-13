@@ -19,12 +19,14 @@ def get_energy_prices():
     """ 
     Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
     """
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    current_time = datetime.datetime.now().strftime("%H:%M")
     url = EVCC_URI + "/api/tariff/grid"
     response = requests.get(url)
     response.raise_for_status()
     response_obj = dict()
     response_obj["data"]= response.json()
-    response_obj["current-datetime"] = date
+    response_obj["current-datetime"] = current_time + " " + current_date
     response_obj["system-instruction"] = "Please report the local minimum and maximum prices in a range of 2-5 cents and according time ranges to the user for loading the electric vehicle."
     return response_obj
 
