@@ -1,27 +1,27 @@
-import os, json, requests
+import os, json, requests, asyncio
 import datetime
 
 
 EVCC_URI=os.getenv("EVCC_URI")
 
-def get_energy_house_data():
+async def get_energy_house_data():
     """
     Returns the current energy data of the house including current energy consumption, pv energy production, wallbox energy production and battery soc.
     """
     url = EVCC_URI + "/api/state"
-    response = requests.get(url)
+    response = await asyncio.to_thread(requests.get, url)
     response.raise_for_status()
     return response.json()
 
 
-def get_energy_prices():
+async def get_energy_prices():
     """ 
     Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
     """
     current_date = datetime.now().strftime("%Y-%m-%d")
     current_time = datetime.now().strftime("%H:%M")
     url = EVCC_URI + "/api/tariff/grid"
-    response = requests.get(url)
+    response = await asyncio.to_thread(requests.get, url)
     response.raise_for_status()
     response_obj = dict()
     response_obj["data"]= response.json()
@@ -33,7 +33,7 @@ def get_energy_prices():
 import requests
 from typing import Annotated, Optional
 
-def set_or_get_wallbox_mode(
+async def set_or_get_wallbox_mode(
         mode: Annotated[Optional[str], "Einer der folgenden Werte: {'off', 'pv', 'minpv', 'now'}. Dabei bedeutet 'off' das Laden deaktiviert ist, 'pv' das Laden nur mittels PV-Überschuss erfolgt, 'minpv' das Laden mit minimaler Leistung erfolgt, aber mit PV-Überschuss ergänzt wird (sofern vorhanden) und 'now' das Laden sofort mit maximaler Leistung erfolgt."] = None
     ) -> Annotated[str, "Der aktuelle Modus der Wallbox."]:
     """
@@ -42,23 +42,23 @@ def set_or_get_wallbox_mode(
     if mode:
         # Wenn ein Modus übergeben wird, setzen wir diesen
         url = EVCC_URI + "/api/loadpoints/1/mode/${MODE}".replace("${MODE}", mode)
-        response = requests.post(url)
+        response = await asyncio.to_thread(requests.post, url)
         return response.json()
     else:
         # Wenn kein Modus übergeben wird, fragen wir den aktuellen Modus ab
         url = EVCC_URI + "/api/state"
-        response = requests.get(url)
+        response = await asyncio.to_thread(requests.get, url)
         r = json.loads(response.text)
         result_mode = r["result"]["loadpoints"][0]["mode"]
         return json.dumps({"mode": result_mode})
 
 
-def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbox."]:
+async def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbox."]:
     """
     Fragt den aktuellen Status der Wallbox ab. Dabei ist der Modus einer der folgenden Werte: {'off', 'pv', 'minpv', 'now'}. Dabei bedeutet 'off' das Laden deaktiviert ist, 'pv' das Laden nur mittels PV-Überschuss erfolgt, 'minpv' das Laden mit minimaler Leistung erfolgt, aber mit PV-Überschuss ergänzt wird (sofern vorhanden) und 'now' das Laden sofort mit maximaler Leistung erfolgt."
     """
     url = EVCC_URI + "/api/state"
-    response = requests.get(url)
+    response = await asyncio.to_thread(requests.get, url)
     r = json.loads(response.text)
     result_mode = r["result"]["loadpoints"][0]["mode"]
     result_charging = r["result"]["loadpoints"][0]["charging"]
@@ -68,11 +68,11 @@ def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbox."]:
 
 WASH_URI=os.getenv("WASH_URI")
 
-def get_washing_machine_status():
+async def get_washing_machine_status():
     """
     Returns the status of the washing machine. Can be either 'washing', 'idle' or 'off'.
     """
-    washingResponse = requests.get(WASH_URI + "/rpc/Shelly.GetStatus", timeout=3)
+    washingResponse = await asyncio.to_thread(requests.get, WASH_URI + "/rpc/Shelly.GetStatus", timeout=3)
     washingResponse.raise_for_status()
     washingResponse = json.loads(washingResponse.text)
     washingReading = washingResponse["switch:0"]["apower"]
@@ -85,11 +85,11 @@ def get_washing_machine_status():
 
 DRY_URI=os.getenv("DRY_URI")
 
-def get_dryer_machine_status():
+async def get_dryer_machine_status():
     """
     Returns the status of the dryer. Can be either 'drying', 'idle' or 'off'.
     """
-    dryerResponse = requests.get(DRY_URI + "/rpc/Shelly.GetStatus", timeout=3)
+    dryerResponse = await asyncio.to_thread(requests.get, DRY_URI + "/rpc/Shelly.GetStatus", timeout=3)
     dryerResponse.raise_for_status()
     dryerResponse = json.loads(dryerResponse.text)
     dryerReading = dryerResponse["switch:0"]["apower"]

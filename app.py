@@ -2,11 +2,9 @@ from dotenv import load_dotenv
 load_dotenv(".envrc")
 
 
-import os, logging
-
+import os, logging, asyncio
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
-
-from src.telegram_handlers import handle_audio, handle_text, start, reset, error_handler
+from src.telegram_handlers import handle_audio, handle_text, start, reset, error_handler, post_init, post_shutdown
 
 
 # Logging-Konfiguration für Debugging
@@ -17,7 +15,11 @@ logging.basicConfig(
 
 def main():
     # Erstellen des Telegram-Bots mit dem Application-Builder
-    application = Application.builder().token(os.getenv("TELEGRAM_BOT_TOKEN")).build()
+    application = (Application.builder()
+                .token(os.getenv("TELEGRAM_BOT_TOKEN"))
+                .post_init(post_init)
+                .post_shutdown(post_shutdown)
+                .build())
 
     # Hinzufügen der Audio- und Text-Handler
     application.add_handler(CommandHandler("start", start))
@@ -28,17 +30,9 @@ def main():
     )
     application.add_error_handler(error_handler)
 
-    try:
-        # Starten des Bots
-        application.run_polling()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        application.stop_running()
-        from src.telegram_user_id_manager import user_id_manager
-        user_id_manager.shutdown()
-        from src.tools.todo_app import todo_app
-        todo_app.shutdown()
+    # Starten des Bots
+    application.run_polling()
+
 
 
 if __name__ == "__main__":
