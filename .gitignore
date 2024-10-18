@@ -166,3 +166,4 @@ cython_debug/
 .envrc
 poetry.lock
 pyproject.toml
+*.sqlite

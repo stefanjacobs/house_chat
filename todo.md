@@ -2,15 +2,17 @@
 
 ## Mandatory
 
-- [ ] Add timestamp to each user prompt
+- [X] Add timestamp to each user prompt -> do not do that
+- [ ] When relevant, insert timestamp in tool instruction message
 - [ ] Build tool server
 - [ ] Make tools remote working
-- [ ] Call tools from server in house-app
+- [X] Call tools from server in house-app
 - [ ] Research: How to use the bot with another user?
 - [X] Deployment on Pi Zero
 
 ## Optional
 
+- [ ] Research: Dynamically load dependencies for different tools
 - [ ] Dynamically load tools (on the fly?)
 - [ ] Document and outsource tools that can be used otherwise
 - [ ] Restructure project
@@ -21,9 +23,9 @@
 - [X] Energieverbrauch vom Haus
 - [ ] Filter Energy Request for relevant data
 - [X] Wallbox Steuerung
-- [ ] Filter Wallbox Requests for relevant data
+- [X] Filter Wallbox Requests for relevant data
 - [ ] Auto API
-- [ ] Tibber API
+- [X] Tibber API
 - [X] Waschmaschine
 - [X] Trockner
 - [ ] Sonnenaufgang & Sonnenuntergang
@@ -31,4 +33,9 @@
 - [ ] Unwettermeldungen
 - [ ] Müllabfuhr-Termine
 - [X] TODO-Liste API/APP
-- [ ] Persist TODO-Liste
+- [X] Persist TODO-Liste
+- [ ] Reminder App - also API mit Thread, die Erinnerungen per Telegram auslöst
+  - [ ] Aufsetzend auf der Reminder App: Push-Nachrichten für ...:
+  - [ ] ... Müllabfuhr-Termine
+  - [ ] ... Unwettermeldungen
+  - [ ] ... fällige ToDo-Items

@@ -1,10 +1,12 @@
 
 from telegram import Update
 from telegram.ext import CallbackContext
+from src.telegram_user_id_manager import user_id_manager
 
 from src.ai_responses import generate_chat_response, transcribe_audio
 import src.ai_chat_history as ai_chat_history
 
+import logging
 
 async def handle_audio(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Audionachrichten von Telegram."""
@@ -35,10 +37,20 @@ async def handle_text(update: Update, context: CallbackContext):
 
 async def start(update: Update, context: CallbackContext):
     """Begrüßt den Benutzer mit einer Nachricht."""
-    await update.message.reply_text('Hallo! Ich bin dein Haus-Bot.')
+    global user_id_manager
+    user_id = update.message.chat_id
+    user_id_manager.add_user(user_id)
+    await update.message.reply_text('Hallo! Ich bin dein Hauself Dobbi.')
 
 
 async def reset(update: Update, context: CallbackContext):
     """Setzt den Chatverlauf zurück."""
     ai_chat_history.CHAT_HISTORY = ai_chat_history.reset_history()
     await update.message.reply_text('Chatverlauf zurückgesetzt.')
+
+
+async def error_handler(update: Update, context: CallbackContext):
+    """Loggt Fehler und informiert den Benutzer."""
+    logging.error(msg="Exception während eines Updates:", exc_info=context.error)
+
+    await update.message.reply_text('Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es später erneut.')

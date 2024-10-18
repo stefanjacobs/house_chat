@@ -2,7 +2,11 @@ import os, io, json
 import openai
 
 import src.ai_chat_history as ai_chat_history
-from src.tool_example import TOOLS, get_energy_house_data, set_or_get_wallbox_mode, get_wallbox_status, get_dryer_machine_status, get_washing_machine_status, todo_app_api, get_energy_prices
+from src.toolbox import TOOLBOX
+
+# i have to import those functions here so that the globals() function of the ai chat can find them
+from src.tools.todo_app import todo_app_api
+from src.tools.house_energy import get_energy_house_data, set_or_get_wallbox_mode, get_wallbox_status, get_dryer_machine_status, get_washing_machine_status, get_energy_prices
 
 # OpenAI Client und API Key setzen
 client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
@@ -18,7 +22,7 @@ def transcribe_audio(audio_file_data):
     return transcript.text
 
 
-def generate_chat_response(prompt, tools=TOOLS):
+def generate_chat_response(prompt, tools=TOOLBOX):
     """Generiert eine Antwort auf eine Textnachricht mit dem OpenAI Modell."""
 
     ai_chat_history.CHAT_HISTORY.append({"role": "user", "content": prompt})

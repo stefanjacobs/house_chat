@@ -6,7 +6,7 @@ import os, logging
 
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
-from src.telegram_handlers import handle_audio, handle_text, start, reset
+from src.telegram_handlers import handle_audio, handle_text, start, reset, error_handler
 
 
 # Logging-Konfiguration für Debugging
@@ -26,9 +26,19 @@ def main():
     application.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text)
     )
+    application.add_error_handler(error_handler)
 
-    # Starten des Bots
-    application.run_polling()
+    try:
+        # Starten des Bots
+        application.run_polling()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        application.stop_running()
+        from src.telegram_user_id_manager import user_id_manager
+        user_id_manager.shutdown()
+        from src.tools.todo_app import todo_app
+        todo_app.shutdown()
 
 
 if __name__ == "__main__":

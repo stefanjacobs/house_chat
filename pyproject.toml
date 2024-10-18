@@ -12,6 +12,7 @@ requests = "^2.32.3"
 openai = "^1.50.1"
 pydantic-core = "^2.23.3"
 python-dotenv = "^1.0.1"
+dwdwfsapi = "^1.1.0"
 
 [build-system]
 requires = ["poetry-core"]

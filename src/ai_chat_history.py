@@ -6,4 +6,3 @@ def reset_history():
     ]
 
 CHAT_HISTORY = reset_history()
-
