@@ -46,14 +46,14 @@ async def start(update: Update, context: CallbackContext):
 async def reset(update: Update, context: CallbackContext):
     """Setzt den Chatverlauf zurück."""
     ai_chat_history.CHAT_HISTORY = ai_chat_history.reset_history()
-    await update.message.reply_text('Chatverlauf zurückgesetzt.')
+    await update.message.reply_text('...Obliviate... - Dobbi hat alles vergessen.')
 
 
 async def error_handler(update: Update, context: CallbackContext):
     """Loggt Fehler und informiert den Benutzer."""
     logging.error(msg="Exception während eines Updates:", exc_info=context.error)
 
-    await update.message.reply_text('Es ist ein unerwarteter Fehler aufgetreten. Bitte versuchen Sie es später erneut.')
+    await update.message.reply_text('Dobbi ist ein misslicher Fehler unterlaufen. Tut mir leid...')
 
 
 async def post_init(_application):

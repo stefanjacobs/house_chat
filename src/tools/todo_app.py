@@ -170,3 +170,4 @@ async def todo_app_api(
         return "Error: Invalid operation. Supported operations: 'add', 'delete', 'get', 'categories', 'delete_category'."
 
 # TODO: Get all todos for listing ordered by category and completed_date
+# TODO: Let the llm decide regarding the categories
