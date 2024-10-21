@@ -10,10 +10,11 @@ python = "^3.11"
 python-telegram-bot = "^21.6"
 requests = "^2.32.3"
 openai = "^1.50.1"
-pydantic-core = "^2.23.3"
+pydantic-core = "=2.23.3"
 python-dotenv = "^1.0.1"
 dwdwfsapi = "^1.1.0"
 aiosqlite = "^0.20.0"
+jiter = "=0.5.0"
 
 [build-system]
 requires = ["poetry-core"]
