@@ -1,5 +1,5 @@
 import os, json, requests, asyncio
-import datetime
+from datetime import datetime
 
 
 EVCC_URI=os.getenv("EVCC_URI")
