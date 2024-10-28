@@ -1,20 +1,34 @@
 import os, json, requests, asyncio
 from datetime import datetime
+from typing import Annotated
 
 
 EVCC_URI=os.getenv("EVCC_URI")
 
-async def get_energy_house_data():
+async def get_energy_house_data() -> Annotated[str, "The current energy data of the house."]:
     """
-    Returns the current energy data of the house including current energy consumption, pv energy production, wallbox energy production and battery soc.
+    Returns the current energy data of the house including current energy consumption, pv energy production, wallbox energy production and battery soc. Negative values mean that the battery is charged or power is fed to the grid.
     """
     url = EVCC_URI + "/api/state"
     response = await asyncio.to_thread(requests.get, url)
     response.raise_for_status()
-    return response.json()
+
+    response = response.json()
+
+    
+    result = dict()
+    result["battery"] = response["result"]["battery"]
+    result["batteryPower"] = response["result"]["battery"][0]["power"]
+    result["batterySoC"] = response["result"]["battery"][0]["soc"]
+    result["batteryCapacity"] = str(response["result"]["battery"][0]["capacity"]) + " kWh"
+    result["gridPower"] = response["result"]["gridPower"]
+    result["homePower"] = response["result"]["homePower"]
+    result["pvPower"] = response["result"]["pvPower"]
+    result["wallboxPower"] = response["result"]["loadpoints"][0]["chargePower"]
+    return json.dumps(result)
 
 
-async def get_energy_prices():
+async def get_energy_prices() -> Annotated[str, "A list of hourly energy prices from the grid."]:
     """ 
     Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
     """
@@ -30,27 +44,16 @@ async def get_energy_prices():
     return json.dumps(response_obj)
 
 
-import requests
-from typing import Annotated, Optional
-
-async def set_or_get_wallbox_mode(
-        mode: Annotated[Optional[str], "Einer der folgenden Werte: {'off', 'pv', 'minpv', 'now'}. Dabei bedeutet 'off' das Laden deaktiviert ist, 'pv' das Laden nur mittels PV-Überschuss erfolgt, 'minpv' das Laden mit minimaler Leistung erfolgt, aber mit PV-Überschuss ergänzt wird (sofern vorhanden) und 'now' das Laden sofort mit maximaler Leistung erfolgt."] = None
+async def set_wallbox_mode(
+        mode: Annotated[str, "Einer der folgenden Werte: {'off', 'pv', 'minpv', 'now'}. Dabei bedeutet 'off' das Laden deaktiviert ist, 'pv' das Laden nur mittels PV-Überschuss erfolgt, 'minpv' das Laden mit minimaler Leistung erfolgt, aber mit PV-Überschuss ergänzt wird (sofern vorhanden) und 'now' das Laden sofort mit maximaler Leistung erfolgt."] = None
     ) -> Annotated[str, "Der aktuelle Modus der Wallbox."]:
     """
     Setzt den Modus der Wallbox oder fragt den aktuellen Modus ab, wenn kein Modus übergeben wird.
     """
-    if mode:
-        # Wenn ein Modus übergeben wird, setzen wir diesen
-        url = EVCC_URI + "/api/loadpoints/1/mode/${MODE}".replace("${MODE}", mode)
-        response = await asyncio.to_thread(requests.post, url)
-        return response.json()
-    else:
-        # Wenn kein Modus übergeben wird, fragen wir den aktuellen Modus ab
-        url = EVCC_URI + "/api/state"
-        response = await asyncio.to_thread(requests.get, url)
-        r = json.loads(response.text)
-        result_mode = r["result"]["loadpoints"][0]["mode"]
-        return json.dumps({"mode": result_mode})
+    # Wenn ein Modus übergeben wird, setzen wir diesen
+    url = EVCC_URI + "/api/loadpoints/1/mode/${MODE}".replace("${MODE}", mode)
+    response = await asyncio.to_thread(requests.post, url)
+    return response.json()
 
 
 async def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbox."]:
@@ -98,3 +101,17 @@ async def get_dryer_machine_status():
     if dryerReading < 10.0:
         return json.dumps({"status": "idle"})
     return json.dumps({"status": "drying"})
+
+
+
+if __name__ == "__main__":
+
+    # dryer = asyncio.run(get_dryer_machine_status())
+
+    # wallbox_status = asyncio.run(get_wallbox_status())
+
+    energy_data = asyncio.run(get_energy_house_data())
+
+    energy_prices = asyncio.run(get_energy_prices())
+    
+    pass
