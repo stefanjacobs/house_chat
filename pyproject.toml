@@ -17,6 +17,7 @@ aiosqlite = "^0.20.0"
 jiter = "=0.5.0"
 ics = "^0.7.2"
 pytz = "^2024.2"
+apscheduler = "^3.10.4"
 
 [build-system]
 requires = ["poetry-core"]
