@@ -43,7 +43,6 @@ def get_weather_week(
     return result
 
 
-
 def get_weather_today(
     ) -> Annotated[str, "Return the weather forecast for today."]:
     """

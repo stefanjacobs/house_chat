@@ -22,9 +22,9 @@
 ## Tools
 
 - [X] Energieverbrauch vom Haus
-- [ ] Filter Energy Request for relevant data
+- [X] Filter Energy Request for relevant data
 - [X] Energiekosten pro kwh pro Stunde
-- [ ] Filtere die Energiekosten auf die noch kommenden Stunden
+- [X] Filtere die Energiekosten auf die noch kommenden Stunden
 - [X] Wallbox Steuerung
 - [X] Filter Wallbox Requests for relevant data
 - [ ] Auto API

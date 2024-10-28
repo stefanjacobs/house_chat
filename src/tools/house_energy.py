@@ -1,4 +1,4 @@
-import os, json, requests, asyncio
+import os, json, requests, asyncio, pytz
 from datetime import datetime
 from typing import Annotated
 
@@ -12,10 +12,7 @@ async def get_energy_house_data() -> Annotated[str, "The current energy data of 
     url = EVCC_URI + "/api/state"
     response = await asyncio.to_thread(requests.get, url)
     response.raise_for_status()
-
     response = response.json()
-
-    
     result = dict()
     result["battery"] = response["result"]["battery"]
     result["batteryPower"] = response["result"]["battery"][0]["power"]
@@ -32,15 +29,23 @@ async def get_energy_prices() -> Annotated[str, "A list of hourly energy prices 
     """ 
     Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
     """
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    current_time = datetime.now().strftime("%H:%M")
+    localtz = pytz.timezone("Europe/Berlin")
+    current_date = datetime.now(tz=localtz).strftime("%Y-%m-%d")
+    current_time = datetime.now(tz=localtz).strftime("%H:%M")
+    now = datetime.now(tz=localtz)
+
     url = EVCC_URI + "/api/tariff/grid"
     response = await asyncio.to_thread(requests.get, url)
     response.raise_for_status()
+    response = response.json()
+
+    # filter response object based on the current date and time: 
+    rates = [x for x in response["result"]["rates"] if datetime.strptime(x["end"], "%Y-%m-%dT%H:%M:%S%z") >= now]
+
     response_obj = dict()
-    response_obj["data"]= response.json()
+    response_obj["rates"]= rates
     response_obj["current-datetime"] = current_time + " " + current_date
-    response_obj["system-instruction"] = "Please report the local minimum and maximum prices in a range of 2-5 cents and according time ranges to the user for loading the electric vehicle."
+    response_obj["system-instruction"] = "Please report the local minimum and maximum prices in a range of 2-5 cents and according time ranges to the user."
     return json.dumps(response_obj)
 
 
