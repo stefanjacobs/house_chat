@@ -40,7 +40,7 @@ async def energy_prices_job():
 def my_scheduler():
     scheduler = AsyncIOScheduler()
 
-    morning_cron = CronTrigger(hour=23, minute=3)
+    morning_cron = CronTrigger(hour=7, minute=0)
     scheduler.add_job(weather_job, morning_cron)
 
     lunch_cron = CronTrigger(hour=14, minute=0)
