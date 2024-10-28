@@ -1,7 +1,6 @@
-import os, io, json, asyncio
+import os, io, json, asyncio, logging
 import openai
 
-import src.ai_chat_history as ai_chat_history
 from src.toolbox import TOOLBOX
 
 # i have to import those functions here so that the globals() function of the ai chat can find them
@@ -10,8 +9,15 @@ from src.tools.house_energy import get_energy_house_data, set_or_get_wallbox_mod
 from src.tools.trash_app import get_tomorrows_trash, get_todays_trash, get_next_trash
 from src.tools.weather_app import get_weather_week, get_weather_today
 
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
+
+
 # OpenAI Client und API Key setzen
 client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# model = "gpt-4o"
+model = "gpt-4o-mini"
 
 
 async def transcribe_audio(audio_file_data):
@@ -24,18 +30,21 @@ async def transcribe_audio(audio_file_data):
     return transcript.text
 
 
-async def generate_chat_response(prompt, tools=TOOLBOX):
+async def generate_chat_response(prompt, user_data, tools=TOOLBOX):
     """Generiert eine Antwort auf eine Textnachricht mit dem OpenAI Modell."""
 
-    ai_chat_history.CHAT_HISTORY.append({"role": "user", "content": prompt})
+    user_id = user_data["user_id"]
+    chat_history = user_data["chat_history"]
+
+    chat_history.append({"role": "user", "content": prompt})
 
     while True:
         response = await client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=ai_chat_history.CHAT_HISTORY,
+            model=model,
+            messages=chat_history,
             tools=tools
         )
-        ai_chat_history.CHAT_HISTORY.append(response.choices[0].message)
+        chat_history.append(response.choices[0].message)
 
         # if no tool is needed, break and return response
         if response.choices[0].message.tool_calls is None:
@@ -51,16 +60,24 @@ async def generate_chat_response(prompt, tools=TOOLBOX):
             try:
                 func_args = json.loads(tool_call_accumulator)
 
-                print(f"Function name: {tool_call_name}")
-                print(f"Function arguments: {func_args}")
-                # Call the corresponding function that we defined and matches what is in the available functions
-                if asyncio.iscoroutinefunction(globals()[tool_call_name]):
-                    func_response = await globals()[tool_call_name](**func_args)
-                else:
-                    func_response = globals()[tool_call_name](**func_args)
-                print("Function response: " + str(func_response))
+                logging.info(f"Function name: {tool_call_name}")
+                logging.info(f"Function arguments before resetting user_id: {func_args}")
+                if "user_id" in func_args.keys():
+                    func_args["user_id"] = user_id
+                logging.info(f"Function arguments after setting user_id: {func_args}")
+                
+                try: 
+                    # Call the corresponding function that we defined and matches what is in the available functions
+                    if asyncio.iscoroutinefunction(globals()[tool_call_name]):
+                        func_response = await globals()[tool_call_name](**func_args)
+                    else:
+                        func_response = globals()[tool_call_name](**func_args)
+                except Exception as e:
+                    logging.error(f"Failed to call function: {tool_call_name} with error: {e}")
+                    func_response = str("An Exception occurred while calling the function.")
+                logging.info("Function response: " + str(func_response))
                 # Append the function response directly to messages
-                ai_chat_history.CHAT_HISTORY.append({
+                chat_history.append({
                     "role": "tool",
                     "tool_call_id": tool_call_id,
                     "name": tool_call_name,

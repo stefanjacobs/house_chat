@@ -3,6 +3,7 @@
 ## Mandatory
 
 - [X] Add timestamp to each user prompt -> do not do that
+- [ ] Make users multi-thread safe
 - [ ] When relevant, insert timestamp in tool instruction message
 - [ ] Build tool server
 - [ ] Make tools remote working
@@ -28,14 +29,15 @@
 - [X] Tibber API
 - [X] Waschmaschine
 - [X] Trockner
-- [ ] Sonnenaufgang & Sonnenuntergang
-- [ ] Wetter
+- [X] Sonnenaufgang & Sonnenuntergang
+- [X] Wetter
 - [ ] Unwettermeldungen
-- [ ] Müllabfuhr-Termine
+- [X] Müllabfuhr-Termine
 - [X] TODO-Liste API/APP
 - [X] Persist TODO-Liste
 - [ ] Reminder App - also API mit Thread, die Erinnerungen per Telegram auslöst
   - [ ] Aufsetzend auf der Reminder App: Push-Nachrichten für ...:
   - [ ] ... Müllabfuhr-Termine
   - [ ] ... Unwettermeldungen
+  - [ ] ... Tagesbericht für heute: Wetter, Müll, Sonnenaufgang/-untergang
   - [ ] ... fällige ToDo-Items

@@ -1,14 +1,16 @@
 
 # TODO: Implement the DWD api and cache the results for 3 hours
 
-import os, datetime
+import os, datetime, logging
 from dwdwfsapi import DwdWeatherWarningsAPI
 
 LATITUDE = os.getenv("HOME_LATITUDE")
 LONGITUDE = os.getenv("HOME_LONGITUDE")
 DWD = DwdWeatherWarningsAPI((LATITUDE, LONGITUDE))
 
-
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+)
 
 
 def update():
@@ -54,17 +56,17 @@ def update():
 if __name__ == "__main__":
     dwd = DWD
     dwd.update()
-    print(f"Warncell id: {dwd.warncell_id}")
-    print(f"Warncell name: {dwd.warncell_name}")
-    print(f"Number of current warnings: {len(dwd.current_warnings)}")
-    print(f"Current warning level: {dwd.current_warning_level}")
-    print(f"Number of expected warnings: {len(dwd.expected_warnings)}")
-    print(f"Expected warning level: {dwd.expected_warning_level}")
-    print(f"Last update: {dwd.last_update}")
-    print('-----------')
+    logging.info(f"Warncell id: {dwd.warncell_id}")
+    logging.info(f"Warncell name: {dwd.warncell_name}")
+    logging.info(f"Number of current warnings: {len(dwd.current_warnings)}")
+    logging.info(f"Current warning level: {dwd.current_warning_level}")
+    logging.info(f"Number of expected warnings: {len(dwd.expected_warnings)}")
+    logging.info(f"Expected warning level: {dwd.expected_warning_level}")
+    logging.info(f"Last update: {dwd.last_update}")
+    logging.info('-----------')
     for warning in dwd.current_warnings:
-        print(warning)
-        print('-----------')
+        logging.info(warning)
+        logging.info('-----------')
     for warning in dwd.expected_warnings:
-        print(warning)
-        print('-----------')
+        logging.info(warning)
+        logging.info('-----------')
