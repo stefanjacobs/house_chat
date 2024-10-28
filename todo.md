@@ -18,6 +18,7 @@
 - [ ] Document and outsource tools that can be used otherwise
 - [ ] Restructure project
 - [ ] When there are too many tools, use a vector database to store them and load them on the fly
+- [ ] Find solution for stupid imports in ai_responses and toolbox
 
 ## Tools
 
