@@ -11,6 +11,8 @@ import logging
 
 async def handle_audio(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Audionachrichten von Telegram."""
+    global USER_DATA
+
     # Herunterladen der Audiodatei als Bytearray
     user_id = update.message.chat_id
     if not user_id in USER_DATA:
@@ -23,12 +25,13 @@ async def handle_audio(update: Update, context: CallbackContext):
     # await update.message.reply_text(f"Transkribierter Text: {text}")
 
     ai_response = await generate_chat_response(text, USER_DATA[user_id])
-
     await update.message.reply_text(ai_response)
 
 
 async def handle_text(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Textnachrichten von Telegram."""
+    global USER_DATA
+
     # Textnachricht des Benutzers
     user_message = update.message.text
     user_id = update.message.chat_id
@@ -37,13 +40,14 @@ async def handle_text(update: Update, context: CallbackContext):
 
     # Antwort von OpenAI generieren
     ai_response = await generate_chat_response(user_message, USER_DATA[user_id])
-
     await update.message.reply_text(ai_response)
 
 
 async def start(update: Update, context: CallbackContext):
     """Begrüßt den Benutzer mit einer Nachricht."""
     global user_id_manager
+    global USER_DATA
+
     user_id = update.message.chat_id
     await create_user_data(user_id)
     await user_id_manager.add_user(user_id)
@@ -52,6 +56,7 @@ async def start(update: Update, context: CallbackContext):
 
 async def reset(update: Update, context: CallbackContext):
     """Setzt den Chatverlauf zurück."""
+    global USER_DATA
     user_id = update.message.chat_id
     await reset_history(user_id)
     await update.message.reply_text('...Obliviate... - Dobbi hat alles vergessen.')
