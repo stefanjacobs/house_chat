@@ -39,6 +39,8 @@ def get_weather_week(
         count += 1
         if count >= 25:
             break
+    
+    result["system-instruction"] = "Please write a proper text summary for the weather forecast for the next three days. If possible, do not use bullet points. Instead write a flowing text that is easy to read."
 
     return result
 
@@ -59,6 +61,8 @@ def get_weather_today(
     for k, v in result.items():
         if k.startswith(current_date):
             today_results[k] = v
+    
+    today_results["system-instruction"] = "Please write a proper text summary for the weather forecast for today. If possible, do not use bullet points. Instead write a flowing text that is easy to read."
 
     return today_results
 
