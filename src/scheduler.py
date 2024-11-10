@@ -69,8 +69,8 @@ async def energy_prices_job():
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
 
 
-# async def test_job():
-#     print("Test-Job fired!")
+async def test_job():
+    logging.info("Test-Job fired!")
 
 
 def my_scheduler():
@@ -85,7 +85,7 @@ def my_scheduler():
     lunch_cron = CronTrigger(hour=14, minute=0)
     scheduler.add_job(energy_prices_job, lunch_cron)
 
-    # test_cron = CronTrigger(minute="*/1")
-    # scheduler.add_job(test_job, test_cron)
+    test_cron = CronTrigger(minute="*/1")
+    scheduler.add_job(test_job, test_cron)
 
     return scheduler
