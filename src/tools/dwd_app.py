@@ -52,6 +52,8 @@ def check_new_warnings():
     if new_warnings != OLD_WARN:
         OLD_WARN = new_warnings
         return True, new_warnings
+    
+    return False, ""
 
 
 
