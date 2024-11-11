@@ -7,53 +7,57 @@ from dwdwfsapi import DwdWeatherWarningsAPI
 LATITUDE = os.getenv("HOME_LATITUDE")
 LONGITUDE = os.getenv("HOME_LONGITUDE")
 DWD = DwdWeatherWarningsAPI((LATITUDE, LONGITUDE))
-
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
+OLD_WARN = None
 
 
-def update():
+
+
+def update_dwd_cache():
     global DWD, LATITUDE, LONGITUDE
-    minVisLevel = 3 # step["vis-min-level"] #     vis-min-level: 3 # warning levels between 0 and 4
 
+    # update the DWD cache every 55 minutes
     now = datetime.datetime.now(datetime.timezone.utc)
     try:
-        if now - DWD.last_update > datetime.timedelta(minutes=15):
+        if now - DWD.last_update > datetime.timedelta(minutes=55):
             DWD.update()
     except:
         DWD = DwdWeatherWarningsAPI((LATITUDE, LONGITUDE))
-        return False
-    
+
+    # return True if the cached data is valid
     if not DWD.data_valid:
         return False
-    
-    headlines, color, maxLevel = "", None, -1
+    return True
 
-    for warning in DWD.expected_warnings:
-        if warning["level"] >= minVisLevel:
-            headlines += warning["event"] + " - "
-            if warning["level"] > maxLevel:
-                color = warning["color"]
-                maxLevel = warning["level"]
 
-    for warning in DWD.current_warnings:
-        if warning["level"] >= minVisLevel:
-            headlines += warning["event"] + " - "
-            if warning["level"] > maxLevel:
-                color = warning["color"]
-                maxLevel = warning["level"]
+def get_current_warnings():
+    global DWD
+    update_dwd_cache()
+    return str(DWD)
+
+
+def check_new_warnings():
+    global OLD_WARN
+
+    if OLD_WARN is None:
+        OLD_WARN = get_current_warnings()
+        return False, ""
     
-    if headlines != "":
-        headlines = headlines[0:-2]
-        # updateUlanzi(config, headlines, color)
-        return True
-    
-    return False
+    new_warnings = get_current_warnings()
+    if new_warnings != OLD_WARN:
+        OLD_WARN = new_warnings
+        return True, new_warnings
+
+
+
 
 
 
 if __name__ == "__main__":
+    # Logging-Konfiguration für Debugging
+    logging.basicConfig(
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
+    )
+
     dwd = DWD
     dwd.update()
     logging.info(f"Warncell id: {dwd.warncell_id}")
@@ -70,3 +74,6 @@ if __name__ == "__main__":
     for warning in dwd.expected_warnings:
         logging.info(warning)
         logging.info('-----------')
+    
+    
+    print(str(dwd))
