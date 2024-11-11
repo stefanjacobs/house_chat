@@ -93,6 +93,29 @@ async def dwd_warning_job():
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
 
 
+async def tomorrow_trash_job():
+    # report energy prices
+    bot = Bot(os.getenv("TELEGRAM_BOT_TOKEN"))
+    global USER_DATA, user_id_manager
+    all_users = await user_id_manager.get_all_users()
+    for user_id in all_users:
+        if user_id in USER_DATA:
+            continue
+        await create_user_data(user_id)
+    
+    import src.tools.trash_app as trash
+    result = await trash.get_tomorrows_trash()
+    if len(result) == 0:
+        return
+
+    current_date = datetime.datetime.now(tz=pytz.timezone("Europe/Berlin")).strftime("%Y-%m-%d %H:%M")
+    for user_id in USER_DATA.keys():
+        ai_response = await generate_chat_response(f"Aktuelles Datum und jetzige Uhrzeit: {current_date}. Welcher Müll wird morgen abgeholt?", USER_DATA[user_id])
+        try:
+            await bot.send_message(chat_id=user_id, text=ai_response)
+        except Exception as e:
+            logging.error(f"Fehler beim Senden an {user_id}: {e}")
+
 
 # async def test_job():
 #     logging.info("Test-Job fired!")
@@ -112,6 +135,9 @@ def my_scheduler():
 
     hourly_cron = CronTrigger(hour="6-22", minute=0)
     scheduler.add_job(dwd_warning_job, hourly_cron)
+
+    trash_cron = CronTrigger(hour=19, minute=0)
+    scheduler.add_job(tomorrow_trash_job, trash_cron)
 
     # test_cron = CronTrigger(minute="*/1")
     # scheduler.add_job(test_job, test_cron)

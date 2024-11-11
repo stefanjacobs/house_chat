@@ -15,6 +15,7 @@ async def get_tomorrows_trash(
     """
     Return a list of trash bins that is going to be emptied tomorrow.
     """
+    global calendar
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     trash = []
     for event in calendar.events:
@@ -35,6 +36,7 @@ async def get_todays_trash(
     """
     Return a list of trash bins that is going to be emptied today.
     """
+    global calendar
     today = datetime.date.today()
     trash = []
     for event in calendar.events:
@@ -55,6 +57,7 @@ async def get_next_trash(
     """
     Return a list of trash bins and the date they will be emptied next.
     """
+    global calendar
     today = datetime.date.today()
     trash = []
 
