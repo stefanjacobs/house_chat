@@ -29,7 +29,13 @@ def update_dwd_cache():
     return True
 
 
-def get_current_warnings():
+from typing import Annotated
+
+def get_current_warnings(
+    ) -> Annotated[str, "Return the current and expected weather warnings."]:
+    """
+    Return the current and expected weather warnings.
+    """
     global DWD
     update_dwd_cache()
     return str(DWD)
@@ -46,6 +52,8 @@ def check_new_warnings():
     if new_warnings != OLD_WARN:
         OLD_WARN = new_warnings
         return True, new_warnings
+
+
 
 
 
