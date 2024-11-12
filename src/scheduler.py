@@ -33,9 +33,11 @@ async def weather_job():
 
 async def weather_forecast_job():
     # report weather
+    logging.info("Weather forecast job started")
     bot = Bot(os.getenv("TELEGRAM_BOT_TOKEN"))
     global USER_DATA, user_id_manager
-    all_users = await user_id_manager.get_all_users()
+    all_users = await user_id_manager.get_all_users()    
+    logging.info(f"All users: {all_users}")
     for user_id in all_users:
         if user_id in USER_DATA:
             continue
@@ -43,6 +45,7 @@ async def weather_forecast_job():
 
     current_date = datetime.datetime.now(tz=pytz.timezone("Europe/Berlin")).strftime("%Y-%m-%d %H:%M")
     for user_id in USER_DATA.keys():
+        logging.info(f"User: {user_id}")
         ai_response = await generate_chat_response(f"Datum und Uhrzeit jetzt: {current_date}. Wie wird das Wetter in den kommenden Tagen?", USER_DATA[user_id])
         try:
             await bot.send_message(chat_id=user_id, text=ai_response)
@@ -139,7 +142,7 @@ def my_scheduler():
     trash_cron = CronTrigger(hour=19, minute=0)
     scheduler.add_job(tomorrow_trash_job, trash_cron)
 
-    # test_cron = CronTrigger(minute="*/1")
-    # scheduler.add_job(test_job, test_cron)
+    test_cron = CronTrigger(minute="*/5")
+    scheduler.add_job(weather_forecast_job, test_cron)
 
     return scheduler
