@@ -131,19 +131,19 @@ def my_scheduler():
     scheduler = AsyncIOScheduler()
 
     morning_cron = CronTrigger(hour=7, minute=0)
-    scheduler.add_job(weather_job, morning_cron)
+    scheduler.add_job(weather_job, morning_cron, misfire_grace_time=60)
 
     noon_cron = CronTrigger(hour=12, minute=0)
-    scheduler.add_job(weather_forecast_job, noon_cron)
+    scheduler.add_job(weather_forecast_job, noon_cron, misfire_grace_time=60)
 
     lunch_cron = CronTrigger(hour=14, minute=0)
-    scheduler.add_job(energy_prices_job, lunch_cron)
+    scheduler.add_job(energy_prices_job, lunch_cron, misfire_grace_time=60)
 
     hourly_cron = CronTrigger(hour="6-22", minute=0)
-    scheduler.add_job(dwd_warning_job, hourly_cron)
+    scheduler.add_job(dwd_warning_job, hourly_cron, misfire_grace_time=60)
 
     trash_cron = CronTrigger(hour=19, minute=0)
-    scheduler.add_job(tomorrow_trash_job, trash_cron)
+    scheduler.add_job(tomorrow_trash_job, trash_cron, misfire_grace_time=60)
 
     # test_cron = CronTrigger(minute="*/5")
     # scheduler.add_job(weather_forecast_job, test_cron)
