@@ -23,7 +23,7 @@ async def get_energy_house_data() -> Annotated[str, "The current energy data of 
     result["pvPower"] = response["result"]["pvPower"]
     result["wallboxPower"] = response["result"]["loadpoints"][0]["chargePower"]
 
-    result["system-instruction"] = "Please write a proper text summary for the energy data. If possible, do not use bullet points. Instead write a flowing text that is easy to read."
+    result["system-instruction"] = "Please write a proper text summary for the energy data. If possible, do not use bullet points. Instead write a short and concise flowing text that is easy to read."
     return json.dumps(result)
 
 
@@ -47,7 +47,7 @@ async def get_energy_prices() -> Annotated[str, "A list of hourly energy prices 
     response_obj = dict()
     response_obj["rates"]= rates
     response_obj["current-datetime"] = current_time + " " + current_date
-    response_obj["system-instruction"] = "Please write a proper text summary for the energy prices. If possible, do not use bullet points. Instead write a flowing text that is easy to read. Focus on the minimum and maximum prices including some tolerances and advice the user on when to use energy cheaply."
+    response_obj["system-instruction"] = "Please write a proper text summary for the energy prices. If possible, do not use bullet points. Instead write a short and concise flowing text that is easy to read. Focus on the minimum and maximum prices including some tolerances and advice the user on when to use energy cheaply."
     return json.dumps(response_obj)
 
 
