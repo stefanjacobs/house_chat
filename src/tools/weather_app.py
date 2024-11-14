@@ -1,9 +1,9 @@
-import os
+import os, asyncio
 import requests
 import datetime, pytz
 from typing import Annotated
 
-def get_weather_week(
+async def get_weather_week(
     ) -> Annotated[str, "Return the weather forecast for the next three days."]:
     """
     Return weather forecast for the next three days. Data included are: temperature, weather, clouds, and wind at 3-hour interval. Additionally sunrise and sunset times are included.
@@ -13,9 +13,8 @@ def get_weather_week(
     uri = "https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}&units=metric"
     uri = uri.replace("{lat}", str(latitude)).replace("{lon}", str(longitude))
     uri = uri.replace("{API key}", os.getenv("OPENWEATHER_API_KEY"))
-    # uri = uri.replace("{part}", "current,minutely,daily,alerts")
 
-    response = requests.get(uri)
+    response = await asyncio.to_thread(requests.get, uri)
     response.raise_for_status()
 
     response = response.json()
@@ -45,12 +44,12 @@ def get_weather_week(
     return result
 
 
-def get_weather_today(
+async def get_weather_today(
     ) -> Annotated[str, "Return the weather forecast for today."]:
     """
     Return weather forecast for the remainder of today. Data included are: temperature, weather, clouds, and wind at 3-hour interval. Additionally sunrise and sunset times are included.
     """
-    result = get_weather_week()
+    result = await get_weather_week()
     timezone = pytz.timezone("Europe/Berlin")
     current_date = datetime.datetime.now(tz=timezone).strftime("%Y-%m-%d")
 
@@ -68,8 +67,8 @@ def get_weather_today(
 
 
 if __name__ == "__main__":
-    # result = get_weather_week()
+    # result = asyncio.run(get_weather_week())
     pass
 
-    result_today = get_weather_today()
+    result_today = asyncio.run(get_weather_today())
     pass
