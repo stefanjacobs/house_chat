@@ -55,7 +55,7 @@ class ToolDefGenerator:
             description = docstring.split("\n")[0].strip()
         else:
             if self.strict:
-                raise ValueError("Function is missing a docstring")
+                raise ValueError(f"Function {function.__name__} is missing a docstring")
             else:
                 description = ""
 

@@ -4,7 +4,7 @@ import openai
 from src.toolbox import TOOLBOX
 
 # i have to import those functions here so that the globals() function of the ai chat can find them
-from src.tools.todo_app import todo_app_api
+from src.tools.todo_app import get_overdue_todos, create_todo, get_categories, get_todos_by_category, update_todo, get_open_todos
 from src.tools.house_energy import get_energy_house_data, set_wallbox_mode, get_wallbox_status, get_dryer_machine_status, get_washing_machine_status, get_energy_prices
 from src.tools.trash_app import get_tomorrows_trash, get_todays_trash, get_next_trash
 from src.tools.weather_app import get_weather_week, get_weather_today
