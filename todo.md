@@ -4,12 +4,15 @@
 
 - [X] Add timestamp to each user prompt -> do not do that
 - [ ] Make users multi-thread safe
-- [ ] When relevant, insert timestamp in tool instruction message
+- [X] When relevant, insert timestamp in tool instruction message
 - [ ] Build tool server
 - [ ] Make tools remote working
 - [X] Call tools from server in house-app
-- [ ] Research: How to use the bot with another user?
+- [X] Research: How to use the bot with another user?
 - [X] Deployment on Pi Zero
+- [X] Buggy, when schedule fires during chat, or two schedules fire at the same time. Collision in tool calls
+- [X] Schedule calls should be done in separate chat - but main chat has to be informed regarding result
+- [ ] User-Data Object is not well done - handle better and more efficient
 
 ## Optional
 
@@ -28,19 +31,19 @@
 - [X] Filtere die Energiekosten auf die noch kommenden Stunden
 - [X] Wallbox Steuerung
 - [X] Filter Wallbox Requests for relevant data
-- [ ] Auto API
+- [X] Auto API
 - [X] Tibber API
 - [X] Waschmaschine
 - [X] Trockner
 - [X] Sonnenaufgang & Sonnenuntergang
 - [X] Wetter
-- [ ] Unwettermeldungen
+- [X] Unwettermeldungen
 - [X] Müllabfuhr-Termine
 - [X] TODO-Liste API/APP
 - [X] Persist TODO-Liste
-- [ ] Reminder App - also API mit Thread, die Erinnerungen per Telegram auslöst
-  - [ ] Aufsetzend auf der Reminder App: Push-Nachrichten für ...:
-  - [ ] ... Müllabfuhr-Termine
-  - [ ] ... Unwettermeldungen
-  - [ ] ... Tagesbericht für heute: Wetter, Müll, Sonnenaufgang/-untergang
-  - [ ] ... fällige ToDo-Items
+- [X] Reminder App - also API mit Thread, die Erinnerungen per Telegram auslöst
+  - [X] Aufsetzend auf der Reminder App: Push-Nachrichten für ...:
+  - [X] ... Müllabfuhr-Termine
+  - [X] ... Unwettermeldungen
+  - [X] ... Tagesbericht für heute: Wetter, Müll, Sonnenaufgang/-untergang
+  - [X] ... fällige ToDo-Items

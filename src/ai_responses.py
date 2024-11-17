@@ -23,16 +23,6 @@ client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 model = "gpt-4o-mini"
 
 
-async def transcribe_audio(audio_file_data):
-    """Transkribiert eine Audiodatei mit OpenAI Whisper auf Deutsch."""
-
-    audio_file = io.BytesIO(audio_file_data)
-    audio_file.name = "audio.ogg"
-    audio_file.seek(0)
-    transcript = await client.audio.transcriptions.create(model="whisper-1", file=audio_file, language="de")
-    return transcript.text
-
-
 async def generate_chat_response(prompt, user_data, tools=TOOLBOX):
     """Generiert eine Antwort auf eine Textnachricht mit dem OpenAI Modell."""
 
@@ -94,3 +84,13 @@ async def generate_chat_response(prompt, user_data, tools=TOOLBOX):
                 pass
 
     return response.choices[0].message.content
+
+
+async def transcribe_audio(audio_file_data):
+    """Transkribiert eine Audiodatei mit OpenAI Whisper auf Deutsch."""
+
+    audio_file = io.BytesIO(audio_file_data)
+    audio_file.name = "audio.ogg"
+    audio_file.seek(0)
+    transcript = await client.audio.transcriptions.create(model="whisper-1", file=audio_file, language="de")
+    return transcript.text
