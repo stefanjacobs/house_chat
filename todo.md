@@ -21,7 +21,7 @@
 - [ ] Document and outsource tools that can be used otherwise
 - [ ] Restructure project
 - [ ] When there are too many tools, use a vector database to store them and load them on the fly
-- [ ] Find solution for stupid imports in ai_responses and toolbox
+- [ ] Find solution for stupid imports in ai_responses and toolbox -> should work with some inits
 
 ## Tools
 
@@ -47,3 +47,6 @@
   - [X] ... Unwettermeldungen
   - [X] ... Tagesbericht für heute: Wetter, Müll, Sonnenaufgang/-untergang
   - [X] ... fällige ToDo-Items
+- [X] Neuigkeiten aus dem Web
+- [ ] Zusammenfassung einer Webseite
+- [ ] PodCast auf Basis einer Webseite

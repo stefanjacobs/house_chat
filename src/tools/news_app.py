@@ -1,0 +1,154 @@
+
+import os, asyncio
+import openai
+import requests, feedparser, pytz
+from datetime import datetime, timedelta
+from typing import Annotated
+from textwrap import dedent
+
+
+INTERESTS = dedent("""
+* Artificial Intelligence
+* Computer Programming Innovations
+* Robotics
+* New Investments in Tech Companies
+* Space Travel
+* Climate Change and Mitigations
+* Computer Games
+""") 
+
+
+NEWS_PROMPT = dedent("""
+Bitte extrahiere die Top {TOP} der relevantesten Nachrichten auf Basis meiner Interessen, absteigend sortiert basierend auf den Interessen:
+
+Interessen: 
+{INTERESTS}
+
+Newsfeed:
+{NEWSFEED}
+
+Die Nachrichten sind bereits auf die letzten 24 Stunden gefiltert. Bitte erstelle eine Bullet Point Liste auf Deutsch wie in folgendem Beispiel:
+
+* [Zusammenfassung von Titel und Summary der Nachricht](Link auf die Nachricht)
+* [Zusammenfassung von Titel und Summary der Nachricht](Link auf die Nachricht)
+* ...
+
+Bitte verzichte auf Überschrift oder Einleitung und fasse die Nachrichten kurz und prägnant zusammen.
+""").replace("{INTERESTS}", INTERESTS)
+
+
+class NewsReaderApp:
+
+    def __init__(self):
+        self.tz = pytz.timezone("Europe/Berlin")
+        pass
+    
+    
+    def _convert_to_datetime(self, published_parsed):
+        dt = datetime(*published_parsed[:6])
+        if published_parsed.tm_zone:
+            tz = pytz.timezone(published_parsed.tm_zone)
+            dt = tz.localize(dt)
+        else:
+            dt = self.tz.localize(dt)
+        return dt
+
+
+    def _feed_to_dict(self, feed):
+        news_dict = {
+            "title": feed.feed.title,
+            "link": feed.feed.link,
+            "entries": []
+        }
+        for entry in feed.entries:
+            news_entry = {
+                "title": entry.title,
+                "link": entry.link,
+                "published": str(self._convert_to_datetime(entry.published_parsed)),
+                "summary": entry.summary
+            }
+            news_dict["entries"].append(news_entry)
+        return news_dict
+
+
+    def _filter(self, feed_dict, time_delta):
+        filtered_entries = []
+        for entry in feed_dict["entries"]:
+            entry_time = datetime.strptime(entry["published"], "%Y-%m-%d %H:%M:%S%z")
+            if entry_time > datetime.now(self.tz) - time_delta:
+                filtered_entries.append(entry)
+        feed_dict["entries"] = filtered_entries
+        return feed_dict
+
+    
+    async def get_news(self, url, top=3):
+        response = await asyncio.to_thread(requests.get, url)
+        response.raise_for_status()
+
+        feed = feedparser.parse(response.text)
+        feed = self._feed_to_dict(feed)
+        feed = self._filter(feed, timedelta(days=1))
+
+        client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # model = "gpt-4o"
+        model = "gpt-4o-mini"
+
+        prompt = NEWS_PROMPT.replace("{NEWSFEED}", str(feed)).replace("{TOP}", str(top))
+    
+        ai_response = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "Du bist ein Newsanalyst und bereitest Nachrichten für deinen User auf."},
+                {"role": "user", "content": prompt}
+                ],
+            max_tokens=5000
+        )
+
+        return ai_response.choices[0].message.content
+    
+    
+    async def condense_news(self, news, top=10):
+        client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # model = "gpt-4o"
+        model = "gpt-4o-mini"
+        
+        prompt = NEWS_PROMPT.replace("{NEWSFEED}", str(news)).replace("{TOP}", str(top))
+    
+        ai_response = await client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "Du bist ein Newsanalyst und bereitest Nachrichten für deinen User auf."},
+                {"role": "user", "content": prompt}
+                ],
+            max_tokens=5000
+        )
+        
+        return ai_response.choices[0].message.content
+
+
+async def get_news() -> Annotated[str, "Generates relevant news based on the user's interests."]:
+    """
+    Generate relevant news based on the user's interests.
+    """
+    news_channel_rsss = dict({
+        "techcrunch": "https://techcrunch.com/feed/",
+        "reuters": "https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-US&gl=US&ceid=US%3Aen",
+        "heise": "https://www.heise.de/rss/heise.rdf",
+        "spiegel": "https://www.spiegel.de/schlagzeilen/tops/index.rss",
+        "macrumors": "https://feeds.macrumors.com/MacRumors-All",
+    })
+    news_reader = NewsReaderApp()
+    news = dict()
+    for feedname, feed in news_channel_rsss.items():
+        news[feedname] = await news_reader.get_news(feed, top=3)
+
+    condensed_news = await news_reader.condense_news(str(news), top=8)
+    return condensed_news
+
+
+
+
+# if __name__ == "__main__":
+#     news = asyncio.run(get_news())
+#     print(news)
+

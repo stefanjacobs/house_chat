@@ -13,6 +13,7 @@ from src.ai_prompts import get_schedule_sysprompt
 import src.tools.trash_app as trash
 import src.tools.dwd_app as dwd
 import src.tools.todo_app as todo
+import src.tools.news_app as news
 
 
 async def init_scheduler_job():
@@ -110,8 +111,6 @@ async def tomorrow_trash_job():
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
 
 
-
-
 async def reminder_job():
     # report open and due todos
     global USER_DATA
@@ -128,6 +127,20 @@ async def reminder_job():
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
+
+
+async def news_job():
+    global USER_DATA
+    bot, schedule_user_data = await init_scheduler_job()
+    
+    for user_id in USER_DATA.keys():
+        ai_response = await generate_chat_response(f"Welche News gibt es aktuell für den Nutzer?", schedule_user_data[user_id])
+        try:
+            await bot.send_message(chat_id=user_id, text=ai_response)
+            USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
+        except Exception as e:
+            logging.error(f"Fehler beim Senden an {user_id}: {e}")
+
 
 
 def my_scheduler():
@@ -151,10 +164,13 @@ def my_scheduler():
     reminder_cron = CronTrigger(minute="1-59/5")
     scheduler.add_job(reminder_job, reminder_cron, misfire_grace_time=60)
 
-    async def test_job():
-        logging.info("Test-Job fired!")
+    news_cron = CronTrigger(hour="6,18", minute=0)
+    scheduler.add_job(news_job, news_cron, misfire_grace_time=60)
 
-    test_cron = CronTrigger(minute="*/5")
-    scheduler.add_job(test_job, test_cron, misfire_grace_time=60)
+#     async def test_job():
+#         logging.info("Test-Job fired!")
+# 
+#     test_cron = CronTrigger(minute="*/5")
+#     scheduler.add_job(test_job, test_cron, misfire_grace_time=60)
 
     return scheduler

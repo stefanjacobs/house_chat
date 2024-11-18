@@ -19,6 +19,7 @@ ics = "^0.7.2"
 pytz = "^2024.2"
 apscheduler = "^3.10.4"
 weconnect = "^0.60.5"
+feedparser = "^6.0.11"
 
 [build-system]
 requires = ["poetry-core"]
