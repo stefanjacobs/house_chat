@@ -87,7 +87,7 @@ class NewsReaderApp:
 
         feed = feedparser.parse(response.text)
         feed = self._feed_to_dict(feed)
-        feed = self._filter(feed, timedelta(days=1))
+        feed = self._filter(feed, timedelta(hours=13))
 
         client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         # model = "gpt-4o"
@@ -132,6 +132,8 @@ async def get_news() -> Annotated[str, "Generates relevant news based on the use
     """
     news_channel_rsss = dict({
         "techcrunch": "https://techcrunch.com/feed/",
+        "theverge": "https://www.theverge.com/rss/google/index.xml",
+        "wired.com": "https://www.wired.com/feed/rss",
         "reuters": "https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-US&gl=US&ceid=US%3Aen",
         "heise": "https://www.heise.de/rss/heise.rdf",
         "spiegel": "https://www.spiegel.de/schlagzeilen/tops/index.rss",
@@ -142,7 +144,7 @@ async def get_news() -> Annotated[str, "Generates relevant news based on the use
     for feedname, feed in news_channel_rsss.items():
         news[feedname] = await news_reader.get_news(feed, top=3)
 
-    condensed_news = await news_reader.condense_news(str(news), top=8)
+    condensed_news = await news_reader.condense_news(str(news), top=12)
     return condensed_news
 
 

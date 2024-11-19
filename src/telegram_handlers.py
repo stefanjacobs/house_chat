@@ -25,7 +25,7 @@ async def handle_audio(update: Update, context: CallbackContext):
     # await update.message.reply_text(f"Transkribierter Text: {text}")
 
     ai_response = await generate_chat_response(text, USER_DATA[user_id])
-    await update.message.reply_text(ai_response)
+    await update.message.reply_text(ai_response, parse_mode="MarkdownV2")
 
 
 async def handle_text(update: Update, context: CallbackContext):
@@ -40,7 +40,7 @@ async def handle_text(update: Update, context: CallbackContext):
 
     # Antwort von OpenAI generieren
     ai_response = await generate_chat_response(user_message, USER_DATA[user_id])
-    await update.message.reply_text(ai_response)
+    await update.message.reply_text(ai_response, parse_mode="MarkdownV2")
 
 
 async def start(update: Update, context: CallbackContext):
@@ -51,7 +51,7 @@ async def start(update: Update, context: CallbackContext):
     user_id = update.message.chat_id
     await create_user_data(user_id)
     await user_id_manager.add_user(user_id)
-    await update.message.reply_text('Hallo! Ich bin dein Hauself Dobbi.')
+    await update.message.reply_text('Hallo! Ich bin dein Hauself Dobbi.', parse_mode="MarkdownV2")
 
 
 async def reset(update: Update, context: CallbackContext):
@@ -59,14 +59,14 @@ async def reset(update: Update, context: CallbackContext):
     global USER_DATA
     user_id = update.message.chat_id
     await reset_history(user_id)
-    await update.message.reply_text('...Obliviate... - Dobbi hat alles vergessen.')
+    await update.message.reply_text('...Obliviate... - Dobbi hat alles vergessen.', parse_mode="MarkdownV2")
 
 
 async def error_handler(update: Update, context: CallbackContext):
     """Loggt Fehler und informiert den Benutzer."""
     logging.error(msg="Exception während eines Updates:", exc_info=context.error)
 
-    await update.message.reply_text('Dobbi ist ein misslicher Fehler unterlaufen. Tut mir leid...')
+    await update.message.reply_text('Dobbi ist ein misslicher Fehler unterlaufen. Tut mir leid...', parse_mode="MarkdownV2")
 
 
 async def post_init(_application):
