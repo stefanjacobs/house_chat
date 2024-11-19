@@ -29,8 +29,8 @@ Newsfeed:
 
 Die Nachrichten sind bereits auf die letzten 24 Stunden gefiltert. Bitte erstelle eine Bullet Point Liste auf Deutsch wie in folgendem Beispiel:
 
-* [Zusammenfassung von Titel und Summary der Nachricht](Link auf die Nachricht)
-* [Zusammenfassung von Titel und Summary der Nachricht](Link auf die Nachricht)
+* [Zusammenfassung von Titel und Summary der Nachricht](Hyperlink-Adresse auf den Artikel)
+* [Zusammenfassung von Titel und Summary der Nachricht](Hyperlink-Adresse auf den Artikel)
 * ...
 
 Bitte verzichte auf Überschrift oder Einleitung und fasse die Nachrichten kurz und prägnant zusammen.
@@ -145,7 +145,13 @@ async def get_news() -> Annotated[str, "Generates relevant news based on the use
         news[feedname] = await news_reader.get_news(feed, top=3)
 
     condensed_news = await news_reader.condense_news(str(news), top=12)
-    return condensed_news
+    result = dict()
+    result["news"] = condensed_news
+    result["system-instruction"] = dedent("""Bitte erstelle auf Basis der gegebenen News eine Bullet Point Liste auf Deutsch wie in folgendem Beispiel:
+* [Zusammenfassung von Titel und Summary der Nachricht](Hyperlink-Adresse auf den Artikel)
+* [Zusammenfassung von Titel und Summary der Nachricht](Hyperlink-Adresse auf den Artikel)
+* ...""")
+    return result
 
 
 
