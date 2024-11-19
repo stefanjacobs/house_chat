@@ -1,7 +1,8 @@
-import os, asyncio
+import os, asyncio, json
 import requests
 import datetime, pytz
 from typing import Annotated
+
 
 async def get_weather_week(
     ) -> Annotated[str, "Return the weather forecast for the next three days."]:
@@ -41,7 +42,7 @@ async def get_weather_week(
     
     result["system-instruction"] = "Please write a proper text summary for the weather forecast for the next three days. If possible, do not use bullet points. Instead write a short and concise flowing text that is easy to read."
 
-    return result
+    return json.dumps(result)
 
 
 async def get_weather_today(
@@ -63,7 +64,7 @@ async def get_weather_today(
     
     today_results["system-instruction"] = "Please write a proper text summary for the weather forecast for today. If possible, do not use bullet points. Instead write a short and concise flowing text that is easy to read."
 
-    return today_results
+    return json.dumps(today_results)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 
-import os, asyncio
+import os, asyncio, json
 import openai
 import requests, feedparser, pytz
 from datetime import datetime, timedelta
@@ -151,7 +151,7 @@ async def get_news() -> Annotated[str, "Generates relevant news based on the use
 * [Zusammenfassung von Titel und Summary der Nachricht](Hyperlink-Adresse auf den Artikel)
 * [Zusammenfassung von Titel und Summary der Nachricht](Hyperlink-Adresse auf den Artikel)
 * ...""")
-    return result
+    return json.dumps(result)
 
 
 

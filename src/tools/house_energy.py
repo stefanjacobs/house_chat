@@ -60,7 +60,7 @@ async def set_wallbox_mode(
     # Wenn ein Modus übergeben wird, setzen wir diesen
     url = EVCC_URI + "/api/loadpoints/1/mode/${MODE}".replace("${MODE}", mode)
     response = await asyncio.to_thread(requests.post, url)
-    return response.json()
+    return json.dumps(response.json())
 
 
 async def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbox."]:

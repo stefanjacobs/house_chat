@@ -28,7 +28,7 @@ async def get_tomorrows_trash(
                 trash.append("Biotonne")
             elif "papiertonne" in event.name.lower():
                 trash.append("Papiertonne")
-    return trash
+    return str(trash)
 
 
 async def get_todays_trash(
@@ -49,7 +49,7 @@ async def get_todays_trash(
                 trash.append("Biotonne")
             elif "papiertonne" in event.name.lower():
                 trash.append("Papiertonne")
-    return trash
+    return str(trash)
 
 
 async def get_next_trash(
@@ -80,4 +80,4 @@ async def get_next_trash(
                     trash.append({"date": date, "type": "Papiertonne"})
                     found["papiertonne"] = True
     
-    return trash
+    return str(trash)
