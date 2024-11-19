@@ -20,6 +20,7 @@ pytz = "^2024.2"
 apscheduler = "^3.10.4"
 weconnect = "^0.60.5"
 feedparser = "^6.0.11"
+telegramify-markdown = "^0.1.16"
 
 [build-system]
 requires = ["poetry-core"]

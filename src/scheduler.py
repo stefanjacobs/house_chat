@@ -4,6 +4,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from telegram import Bot
+from telegramify_markdown import markdownify
 
 from src.telegram_user_data import USER_DATA, create_user_data
 from src.telegram_user_id_manager import user_id_manager
@@ -49,7 +50,7 @@ async def weather_job():
     for user_id in schedule_user_data.keys():
         ai_response = await generate_chat_response(f"Wie wird das Wetter heute?", schedule_user_data[user_id])
         try:
-            await bot.send_message(chat_id=user_id, text=ai_response, parse_mode="MarkdownV2")
+            await bot.send_message(chat_id=user_id, text=markdownify(ai_response), parse_mode="MarkdownV2")
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
@@ -61,7 +62,7 @@ async def weather_forecast_job():
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Wie wird das Wetter in den kommenden Tagen?", schedule_user_data[user_id])
         try:
-            await bot.send_message(chat_id=user_id, text=ai_response, parse_mode="MarkdownV2")
+            await bot.send_message(chat_id=user_id, text=markdownify(ai_response), parse_mode="MarkdownV2")
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
@@ -73,7 +74,7 @@ async def energy_prices_job():
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Wie entwickeln sich die Energiepreise bis morgen Abend, 24 Uhr? Wann ist der Strom besonders günstig?", schedule_user_data[user_id])
         try:
-            await bot.send_message(chat_id=user_id, text=ai_response, parse_mode="MarkdownV2")
+            await bot.send_message(chat_id=user_id, text=markdownify(ai_response), parse_mode="MarkdownV2")
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
@@ -89,7 +90,7 @@ async def dwd_warning_job():
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Folgende Wetterwarnungen liegen vor: {warn}. Bitte informiere den Nutzer über die jetzt wichtigsten Warnungen.", schedule_user_data[user_id])
         try:
-            await bot.send_message(chat_id=user_id, text=ai_response, parse_mode="MarkdownV2")
+            await bot.send_message(chat_id=user_id, text=markdownify(ai_response), parse_mode="MarkdownV2")
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
@@ -105,7 +106,7 @@ async def tomorrow_trash_job():
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Welcher Müll wird morgen abgeholt?", schedule_user_data[user_id])
         try:
-            await bot.send_message(chat_id=user_id, text=ai_response, parse_mode="MarkdownV2")
+            await bot.send_message(chat_id=user_id, text=markdownify(ai_response), parse_mode="MarkdownV2")
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
@@ -123,7 +124,7 @@ async def reminder_job():
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Welche Todos sind überfällig?", schedule_user_data[user_id])
         try:
-            await bot.send_message(chat_id=user_id, text=ai_response, parse_mode="MarkdownV2")
+            await bot.send_message(chat_id=user_id, text=markdownify(ai_response), parse_mode="MarkdownV2")
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
@@ -136,7 +137,7 @@ async def news_job():
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Welche News gibt es aktuell für den Nutzer?", schedule_user_data[user_id])
         try:
-            await bot.send_message(chat_id=user_id, text=ai_response, parse_mode="MarkdownV2")
+            await bot.send_message(chat_id=user_id, text=markdownify(ai_response), parse_mode="MarkdownV2")
             USER_DATA[user_id]["chat_history"].append({"role": "assistant", "content": ai_response})
         except Exception as e:
             logging.error(f"Fehler beim Senden an {user_id}: {e}")
