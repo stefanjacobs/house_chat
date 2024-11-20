@@ -103,6 +103,8 @@ async def tomorrow_trash_job():
     result = await trash.get_tomorrows_trash()
     if len(result) == 0:
         return
+    if result == "" or result == "[]":
+        return
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Welcher Müll wird morgen abgeholt?", schedule_user_data[user_id])
         try:

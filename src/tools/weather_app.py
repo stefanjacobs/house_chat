@@ -50,12 +50,13 @@ async def get_weather_today(
     """
     Return weather forecast for the remainder of today. Data included are: temperature, weather, clouds, and wind at 3-hour interval. Additionally sunrise and sunset times are included.
     """
-    result = await get_weather_week()
+    result = json.loads(await get_weather_week())
     timezone = pytz.timezone("Europe/Berlin")
+    current_datetime = datetime.datetime.now(tz=timezone).strftime("%Y-%m-%d %H:%M")
     current_date = datetime.datetime.now(tz=timezone).strftime("%Y-%m-%d")
 
     today_results = dict()
-    today_results["current_datetime"] = result["current_datetime"]
+    today_results["current_datetime"] = current_datetime
     today_results["sunrise"] = result["sunrise"]
     today_results["sunset"] = result["sunset"]
     for k, v in result.items():
