@@ -139,11 +139,15 @@ async def get_news() -> Annotated[str, "Generates relevant news based on the use
         "spiegel": "https://www.spiegel.de/schlagzeilen/tops/index.rss",
         "macrumors": "https://feeds.macrumors.com/MacRumors-All",
     })
-    news_reader = NewsReaderApp()
-    news = dict()
-    for feedname, feed in news_channel_rsss.items():
-        news[feedname] = await news_reader.get_news(feed, top=3)
+    
+    async def fetch_news(feedname, feed):
+        return feedname, await news_reader.get_news(feed, top=3)
 
+    news_reader = NewsReaderApp()
+    tasks = [fetch_news(feedname, feed) for feedname, feed in news_channel_rsss.items()]
+    results = await asyncio.gather(*tasks)
+    news = {feedname: result for feedname, result in results}
+    
     condensed_news = await news_reader.condense_news(str(news), top=12)
     result = dict()
     result["news"] = condensed_news

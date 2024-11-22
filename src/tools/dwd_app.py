@@ -38,7 +38,11 @@ def get_current_warnings(
     """
     global DWD
     update_dwd_cache()
-    return str(DWD)
+
+    cur_warn = "".join([str(warning) + "\n" for warning in DWD.current_warnings if warning["level"] >= 1])
+    exp_warn = "".join([str(warning) + "\n" for warning in DWD.expected_warnings if warning["level"] >= 1])
+
+    return str(DWD) + "\n" + "Current warnings:\n" + str(cur_warn) + "\nExpected warnings:\n" + str(exp_warn)
 
 
 def check_new_warnings():
@@ -55,9 +59,6 @@ def check_new_warnings():
         return True, new_warnings
     
     return False, ""
-
-
-
 
 
 
@@ -86,5 +87,10 @@ if __name__ == "__main__":
         logging.info(warning)
         logging.info('-----------')
     
+    print()
     
     print(str(dwd))
+
+    print()
+
+    print(get_current_warnings())
