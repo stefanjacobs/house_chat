@@ -39,10 +39,13 @@ def get_current_warnings(
     global DWD
     update_dwd_cache()
 
-    cur_warn = "".join([str(warning) + "\n" for warning in DWD.current_warnings if warning["level"] >= 1])
-    exp_warn = "".join([str(warning) + "\n" for warning in DWD.expected_warnings if warning["level"] >= 1])
+    cur_warn = "".join([str(warning) + "\n" for warning in DWD.current_warnings if warning["level"] >= 2])
+    exp_warn = "".join([str(warning) + "\n" for warning in DWD.expected_warnings if warning["level"] >= 2])
 
-    return str(DWD) + "\n" + "Current warnings:\n" + str(cur_warn) + "\nExpected warnings:\n" + str(exp_warn)
+    if len(DWD.current_warnings) > 0 or len(DWD.expected_warnings) > 0:
+        link = os.getenv("DWD_URL")
+
+    return "Current warnings:\n" + str(cur_warn) + "\nExpected warnings:\n" + str(exp_warn) + "\nFor more information visit: " + str(link)
 
 
 def check_new_warnings():
