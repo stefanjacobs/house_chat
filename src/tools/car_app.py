@@ -1,6 +1,7 @@
 import os
-from typing import Annotated
+from typing import Annotated, Optional
 from weconnect import weconnect
+from weconnect.elements.control_operation import ControlOperation
 import json
 
 
@@ -16,6 +17,35 @@ class CarApp:
     def get_car_status(self):
         self.connection.update(updatePictures=False, updateCapabilities=False)
         return self.connection.vehicles[self.VW_VIN]
+    
+    
+    def car_climate_control(self, activate=None):
+        print('#  update')
+        self.connection.update(updatePictures=False, updateCapabilities=True)
+
+        for vin, vehicle in self.connection.vehicles.items():
+            if vin == self.VW_VIN:
+                if "climatisation" in vehicle.domains \
+                    and "climatisationStatus" in vehicle.domains["climatisation"] \
+                    and vehicle.domains["climatisation"]["climatisationStatus"].enabled:
+                    if vehicle.domains["climatisation"]["climatisationStatus"].climatisationState.enabled:
+                        print('#  climatization status')
+                        print(vehicle.domains["climatisation"]["climatisationStatus"].climatisationState.value)
+
+                if vehicle.controls.climatizationControl is not None and vehicle.controls.climatizationControl.enabled:
+                    if activate is None:
+                        print('#  get climatization status')
+                        print(vehicle.controls.climatizationControl.value)
+                        return str(vehicle.controls.climatizationControl.value)
+                    if activate == True:
+                        print('#  start climatization')
+                        vehicle.controls.climatizationControl.value = ControlOperation.START
+                        return "Started climatization in car."
+                    else:
+                        print('#  stop climatization')
+                        vehicle.controls.climatizationControl.value = ControlOperation.STOP
+                        return "Stopped climatization in car."
+        return "No climatization control available for this car."
 
 
 carApp = CarApp()
@@ -38,6 +68,20 @@ def get_car_status() -> Annotated[str, "Return the current status of the car as 
     
     return json.dumps(result)
 
+
+
+def car_climate_control(
+    activate: Annotated[Optional[str], "Activate or deactivate the car's climate control. 'True' for activate, 'False' for deactivate. If not given, return the current status of the climate control"] = None
+) -> Annotated[str, "Returns a message that either indicates the status of the climate control. the climate control was activated or deactivated."]:
+    """
+    Activate or deactivate the car's climate control.
+    """
+    global carApp
+    if activate is None or activate == "":
+        result = carApp.car_climate_control(None)
+    else:
+        result = carApp.car_climate_control(activate == "True")
+    return result
 
 
 

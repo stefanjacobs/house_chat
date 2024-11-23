@@ -9,7 +9,7 @@ from src.tools.house_energy import get_energy_house_data, set_wallbox_mode, get_
 from src.tools.trash_app import get_tomorrows_trash, get_todays_trash, get_next_trash
 from src.tools.weather_app import get_weather_week, get_weather_today
 from src.tools.dwd_app import get_current_warnings
-from src.tools.car_app import get_car_status
+from src.tools.car_app import get_car_status, car_climate_control
 from src.tools.news_app import get_news
 
 
