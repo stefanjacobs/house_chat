@@ -45,8 +45,8 @@ def get_current_warnings(
 
     if len(DWD.current_warnings) > 0 or len(DWD.expected_warnings) > 0:
         link = os.getenv("DWD_URL")
-
-    return "Current warnings:\n" + str(cur_warn) + "\nExpected warnings:\n" + str(exp_warn) + "\nFor more information visit: " + str(link)
+        return "Current warnings:\n" + str(cur_warn) + "\nExpected warnings:\n" + str(exp_warn) + "\nFor more information visit: " + str(link)
+    return ""
 
 
 def check_new_warnings():

@@ -85,7 +85,7 @@ async def dwd_warning_job():
     global USER_DATA
     bot, schedule_user_data = await init_scheduler_job()
     result, warn = dwd.check_new_warnings()
-    if not result:
+    if result == "":
         return
     for user_id in USER_DATA.keys():
         ai_response = await generate_chat_response(f"Folgende Wetterwarnungen liegen vor: {warn}. Bitte informiere den Nutzer über die jetzt wichtigsten Warnungen.", schedule_user_data[user_id])
