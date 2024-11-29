@@ -2,8 +2,10 @@ import os, asyncio, json
 import requests
 import datetime, pytz
 from typing import Annotated
+from src.toolbox.toolbox import register_tool_decorator
 
 
+@register_tool_decorator
 async def get_weather_week(
     ) -> Annotated[str, "Return the weather forecast for the next three days."]:
     """
@@ -45,6 +47,7 @@ async def get_weather_week(
     return json.dumps(result)
 
 
+@register_tool_decorator
 async def get_weather_today(
     ) -> Annotated[str, "Return the weather forecast for today."]:
     """

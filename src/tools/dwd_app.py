@@ -3,13 +3,13 @@
 
 import os, datetime, logging
 from dwdwfsapi import DwdWeatherWarningsAPI
+from src.toolbox.toolbox import register_tool_decorator
+
 
 LATITUDE = os.getenv("HOME_LATITUDE")
 LONGITUDE = os.getenv("HOME_LONGITUDE")
 DWD = DwdWeatherWarningsAPI((LATITUDE, LONGITUDE))
 OLD_WARN = None
-
-
 
 
 def update_dwd_cache():
@@ -31,6 +31,7 @@ def update_dwd_cache():
 
 from typing import Annotated
 
+@register_tool_decorator
 def get_current_warnings(
     ) -> Annotated[str, "Return the current and expected weather warnings."]:
     """

@@ -1,16 +1,9 @@
 import os, io, json, asyncio, logging
 import openai
 
-from src.toolbox import TOOLBOX
+from src.toolbox.toolbox import TOOLBOX
 
-# i have to import those functions here so that the globals() function of the ai chat can find them
-from src.tools.todo_app import get_overdue_todos, create_todo, get_categories, get_todos_by_category, update_todo, get_open_todos
-from src.tools.house_energy import get_energy_house_data, set_wallbox_mode, get_wallbox_status, get_dryer_machine_status, get_washing_machine_status, get_energy_prices
-from src.tools.trash_app import get_tomorrows_trash, get_todays_trash, get_next_trash
-from src.tools.weather_app import get_weather_week, get_weather_today
-from src.tools.dwd_app import get_current_warnings
-from src.tools.car_app import get_car_status, car_climate_control
-from src.tools.news_app import get_news
+import src.tools
 
 
 logging.basicConfig(
@@ -24,11 +17,16 @@ client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 model = "gpt-4o-mini"
 
 
-async def generate_chat_response(prompt, user_data, tools=TOOLBOX):
+async def generate_chat_response(prompt, user_data, toolbox=TOOLBOX):
     """Generiert eine Antwort auf eine Textnachricht mit dem OpenAI Modell."""
 
     user_id = user_data["user_id"]
     chat_history = user_data["chat_history"]
+
+    # TODO: hier könnte tool filtering stattfinden
+    tools = []
+    for (_, tool, _) in toolbox:
+        tools.append(tool)
 
     chat_history.append({"role": "user", "content": prompt})
 
@@ -59,24 +57,26 @@ async def generate_chat_response(prompt, user_data, tools=TOOLBOX):
                 if "user_id" in func_args.keys():
                     func_args["user_id"] = user_id
                 logging.info(f"Function arguments after setting user_id: {func_args}")
-                
-                try: 
-                    # Call the corresponding function that we defined and matches what is in the available functions
-                    if asyncio.iscoroutinefunction(globals()[tool_call_name]):
-                        func_response = await globals()[tool_call_name](**func_args)
+
+                try: # find in toolbox the function that matches the tool_call_name and execute it
+                    func = next((func for (fname, _, func) in toolbox if fname == tool_call_name), None)
+                    if asyncio.iscoroutinefunction(func):
+                        func_response = await func(**func_args)
                     else:
-                        func_response = globals()[tool_call_name](**func_args)
+                        func_response = func(**func_args)
+
                 except Exception as e:
                     logging.error(f"Failed to call function: {tool_call_name} with error: {e}")
                     func_response = str("An Exception occurred while calling the function.")
-                logging.info("Function response: " + str(func_response))
-                # Append the function response directly to messages
-                chat_history.append({
-                    "role": "tool",
-                    "tool_call_id": tool_call_id,
-                    "name": tool_call_name,
-                    "content": str(func_response),
-                })
+                finally:
+                    logging.info("Function response: " + str(func_response))
+                    # Append the function response directly to messages
+                    chat_history.append({
+                        "role": "tool",
+                        "tool_call_id": tool_call_id,
+                        "name": tool_call_name,
+                        "content": str(func_response),
+                    })
                 tool_call_accumulator = ""  # Reset for the next tool call
                 tool_call_name = None
                 tool_call_id = None

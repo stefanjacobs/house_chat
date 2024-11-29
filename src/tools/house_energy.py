@@ -1,10 +1,12 @@
 import os, json, requests, asyncio, pytz
 from datetime import datetime
 from typing import Annotated
+from src.toolbox.toolbox import register_tool_decorator
 
 
 EVCC_URI=os.getenv("EVCC_URI")
 
+@register_tool_decorator
 async def get_energy_house_data() -> Annotated[str, "The current energy data of the house."]:
     """
     Returns the current energy data of the house including current energy consumption, pv energy production, wallbox energy production and battery soc. Negative values mean that the battery is charged or power is fed to the grid.
@@ -27,6 +29,7 @@ async def get_energy_house_data() -> Annotated[str, "The current energy data of 
     return json.dumps(result)
 
 
+@register_tool_decorator
 async def get_energy_prices() -> Annotated[str, "A list of hourly energy prices from the grid."]:
     """ 
     Returns a list of energy prices in Euro from the grid for each hour till 12:00 today or tomorrow.
@@ -51,6 +54,7 @@ async def get_energy_prices() -> Annotated[str, "A list of hourly energy prices 
     return json.dumps(response_obj)
 
 
+@register_tool_decorator
 async def set_wallbox_mode(
         mode: Annotated[str, "Einer der folgenden Werte: {'off', 'pv', 'minpv', 'now'}. Dabei bedeutet 'off' das Laden deaktiviert ist, 'pv' das Laden nur mittels PV-Überschuss erfolgt, 'minpv' das Laden mit minimaler Leistung erfolgt, aber mit PV-Überschuss ergänzt wird (sofern vorhanden) und 'now' das Laden sofort mit maximaler Leistung erfolgt."] = None
     ) -> Annotated[str, "Der aktuelle Modus der Wallbox."]:
@@ -63,6 +67,7 @@ async def set_wallbox_mode(
     return json.dumps(response.json())
 
 
+@register_tool_decorator
 async def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbox."]:
     """
     Fragt den aktuellen Status der Wallbox ab. Dabei ist der Modus einer der folgenden Werte: {'off', 'pv', 'minpv', 'now'}. Dabei bedeutet 'off' das Laden deaktiviert ist, 'pv' das Laden nur mittels PV-Überschuss erfolgt, 'minpv' das Laden mit minimaler Leistung erfolgt, aber mit PV-Überschuss ergänzt wird (sofern vorhanden) und 'now' das Laden sofort mit maximaler Leistung erfolgt."
@@ -78,6 +83,7 @@ async def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbo
 
 WASH_URI=os.getenv("WASH_URI")
 
+@register_tool_decorator
 async def get_washing_machine_status():
     """
     Returns the status of the washing machine. Can be either 'washing', 'idle' or 'off'.
@@ -95,6 +101,7 @@ async def get_washing_machine_status():
 
 DRY_URI=os.getenv("DRY_URI")
 
+@register_tool_decorator
 async def get_dryer_machine_status():
     """
     Returns the status of the dryer. Can be either 'drying', 'idle' or 'off'.

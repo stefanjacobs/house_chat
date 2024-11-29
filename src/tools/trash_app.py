@@ -1,5 +1,6 @@
 from typing import Annotated
 import datetime, ics
+from src.toolbox.toolbox import register_tool_decorator
 
 # Get the current year
 current_year = datetime.datetime.now().year
@@ -10,6 +11,7 @@ with open(filename, 'r') as file:
 calendar = ics.Calendar(data)
 
 
+@register_tool_decorator
 async def get_tomorrows_trash(
     ) -> Annotated[str, "Return a list of trash bins that will be emptied tomorrow."]:
     """
@@ -31,6 +33,7 @@ async def get_tomorrows_trash(
     return str(trash)
 
 
+@register_tool_decorator
 async def get_todays_trash(
     ) -> Annotated[str, "Return a list of trash bins that will be emptied today."]:
     """
@@ -52,6 +55,7 @@ async def get_todays_trash(
     return str(trash)
 
 
+@register_tool_decorator
 async def get_next_trash(
 ) -> Annotated[str, "Return a list of trash bins and the date they will be emptied next."]:
     """

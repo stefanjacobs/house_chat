@@ -4,7 +4,6 @@ from telegram.ext import CallbackContext
 from telegramify_markdown import markdownify
 from src.telegram_user_data import USER_DATA, create_user_data, reset_history
 from src.telegram_user_id_manager import user_id_manager
-# from src.tools.todo_app import get_overdue_todos, create_todo, get_categories, get_todos_by_category, update_todo, get_open_todos
 
 from src.ai_responses import generate_chat_response, transcribe_audio
 

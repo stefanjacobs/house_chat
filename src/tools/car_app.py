@@ -4,6 +4,8 @@ from weconnect import weconnect
 from weconnect.elements.control_operation import ControlOperation
 import json
 
+from src.toolbox.toolbox import register_tool_decorator
+
 
 class CarApp:
     
@@ -51,6 +53,7 @@ class CarApp:
 carApp = CarApp()
 
 
+@register_tool_decorator
 def get_car_status() -> Annotated[str, "Return the current status of the car as a json string."]:
     """
     Generate status object for the given car and convert it to a dictionary.
@@ -69,7 +72,7 @@ def get_car_status() -> Annotated[str, "Return the current status of the car as 
     return json.dumps(result)
 
 
-
+@register_tool_decorator
 def car_climate_control(
     activate: Annotated[Optional[str], "Activate or deactivate the car's climate control. 'True' for activate, 'False' for deactivate. If not given, return the current status of the climate control"] = None
 ) -> Annotated[str, "Returns a message that either indicates the status of the climate control. the climate control was activated or deactivated."]:

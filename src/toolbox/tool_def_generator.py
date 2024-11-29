@@ -98,3 +98,28 @@ class ToolDefGenerator:
             }
         }
         return result
+
+
+
+
+if __name__ == "__main__":
+    
+    def add(a: Annotated[int, "op 1"], b: Annotated[int, "op 2"]) -> Annotated[str, "Add two numbers"]:
+        """
+        Add two numbers
+        """
+        return str(a + b)
+    
+    def sub(a: Annotated[int, "op 1"], b: Annotated[int, "op 2"]) -> Annotated[str, "Subtract two numbers"]:
+        """
+        Subtract two numbers
+        """
+        return str(a - b)
+    
+    
+    t1g = ToolDefGenerator()
+    t1 = t1g.generate(add)
+
+    t2 = t1g.generate(add, sub)
+
+    pass

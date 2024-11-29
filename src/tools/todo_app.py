@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import List, Optional, Dict, Annotated
 from dataclasses import dataclass
 import aiosqlite
+from src.toolbox.toolbox import register_tool_decorator
 
 @dataclass
 class Todo:
@@ -304,7 +305,7 @@ class DatabaseError(Exception):
     pass
 
 
-
+@register_tool_decorator
 async def get_overdue_todos() -> Annotated[str, "Return a list of overdue todos."]:
     """
     Get a list of overdue todos.
@@ -313,6 +314,7 @@ async def get_overdue_todos() -> Annotated[str, "Return a list of overdue todos.
         overdue = await todo_manager.get_overdue_todos()
     return str(overdue)
 
+@register_tool_decorator
 async def create_todo(
         title: Annotated[str, "The todo item title"], 
         category: Annotated[Optional[str], "The category of the todo item, 'default' if not specified."], 
@@ -326,6 +328,7 @@ async def create_todo(
         todo = await todo_manager.add_todo(title, category, due_date_datetime)
     return str(todo)
 
+@register_tool_decorator
 async def get_categories(
     ) -> Annotated[str, "Return a list of all categories with open todos."]:
     """
@@ -336,6 +339,7 @@ async def get_categories(
     categories = set(todo.category for todo in all_todos)
     return str(categories)
 
+@register_tool_decorator
 async def get_todos_by_category(
         category: Annotated[str, "The given category"],
     ) -> Annotated[str, "Return a list of todos by category."]:
@@ -346,6 +350,7 @@ async def get_todos_by_category(
         todos = await todo_manager.get_todos_by_category(category)
     return str(todos)
 
+@register_tool_decorator
 async def update_todo(
         todo_id: Annotated[int, "The todo item id"],
         title: Annotated[Optional[str], "The modified title"] = None, 
@@ -363,6 +368,7 @@ async def update_todo(
     return str(todo)
 
 
+@register_tool_decorator
 async def get_open_todos(
     ) -> Annotated[str, "Return a list of open todos."]:
     """

@@ -5,6 +5,7 @@ import requests, feedparser, pytz
 from datetime import datetime, timedelta
 from typing import Annotated
 from textwrap import dedent
+from src.toolbox.toolbox import register_tool_decorator
 
 
 INTERESTS = dedent("""
@@ -126,6 +127,7 @@ class NewsReaderApp:
         return ai_response.choices[0].message.content
 
 
+@register_tool_decorator
 async def get_news() -> Annotated[str, "Generates relevant news based on the user's interests."]:
     """
     Generate relevant news based on the user's interests.
