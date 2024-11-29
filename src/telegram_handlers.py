@@ -6,6 +6,7 @@ from src.telegram_user_data import USER_DATA, create_user_data, reset_history
 from src.telegram_user_id_manager import user_id_manager
 
 from src.ai_responses import generate_chat_response, transcribe_audio
+from src.scheduler import my_scheduler
 
 import logging
 
@@ -72,6 +73,8 @@ async def error_handler(update: Update, context: CallbackContext):
 async def post_init(_application):
     """Initialisierung des Bots."""
     await user_id_manager.connect()
+    scheduler = my_scheduler()
+    scheduler.start()
 
 
 async def post_shutdown(_application):
