@@ -24,9 +24,7 @@ async def generate_chat_response(prompt, user_data, toolbox=TOOLBOX):
     chat_history = user_data["chat_history"]
 
     # TODO: hier könnte tool filtering stattfinden
-    tools = []
-    for (_, tool, _) in toolbox:
-        tools.append(tool)
+    tools = [tool for (_, tool, _) in toolbox]
 
     chat_history.append({"role": "user", "content": prompt})
 
