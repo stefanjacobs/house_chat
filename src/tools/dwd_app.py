@@ -59,7 +59,7 @@ def check_new_warnings():
     new_warnings = get_current_warnings()
     if new_warnings != OLD_WARN:
         OLD_WARN = new_warnings
-        logging.info(f"New warnings: {new_warnings}")
+        logging.info(f"Old warnings: {OLD_WARN}\nNew warnings: {new_warnings}")
         return True, new_warnings
     
     return False, ""
