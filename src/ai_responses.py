@@ -16,8 +16,10 @@ logging.basicConfig(
 # OpenAI Client und API Key setzen
 client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # model = "gpt-4o"
-# model = "gpt-4o-mini"
-model = "o1-mini"
+model = "gpt-4o-mini"
+
+# o1 models do not support tool-calling up to now
+# model = "o1-mini"
 
 
 async def generate_chat_response(prompt, user_data, toolbox=TOOLBOX):
@@ -31,11 +33,11 @@ async def generate_chat_response(prompt, user_data, toolbox=TOOLBOX):
 
     chat_history.append({"role": "user", "content": prompt})
 
-    # for o1 models, there is no system prompt - replace it with user
-    if model.startswith("o1"):
-        for item in chat_history:
-            if item["role"] == "system":
-                item["role"] = "user"
+    # # for o1 models, there is no system prompt - replace it with user
+    # if model.startswith("o1"):
+    #     for item in chat_history:
+    #         if item["role"] == "system":
+    #             item["role"] = "user"
 
     while True:
         response = await client.chat.completions.create(
