@@ -10,11 +10,14 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
 )
 
+# Model page of openai:
+# 
 
 # OpenAI Client und API Key setzen
 client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # model = "gpt-4o"
-model = "gpt-4o-mini"
+# model = "gpt-4o-mini"
+model = "o1-mini"
 
 
 async def generate_chat_response(prompt, user_data, toolbox=TOOLBOX):
