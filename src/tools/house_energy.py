@@ -20,7 +20,7 @@ async def get_energy_house_data() -> Annotated[str, "The current energy data of 
     result["batteryPower"] = response["result"]["battery"][0]["power"]
     result["batterySoC"] = response["result"]["battery"][0]["soc"]
     result["batteryCapacity"] = str(response["result"]["battery"][0]["capacity"]) + " kWh"
-    result["gridPower"] = response["result"]["gridPower"]
+    result["gridPower"] = response["result"]["grid"]["power"]
     result["homePower"] = response["result"]["homePower"]
     result["pvPower"] = response["result"]["pvPower"]
     result["wallboxPower"] = response["result"]["loadpoints"][0]["chargePower"]
