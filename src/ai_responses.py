@@ -16,7 +16,7 @@ logging.basicConfig(
 # OpenAI Client und API Key setzen
 client = openai.AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 # model = "gpt-4o"
-model = "gpt-4o-mini"
+model = "gpt-4.1-mini-2025-04-14"
 
 # o1 models do not support tool-calling up to now
 # model = "o1-mini"
@@ -26,6 +26,7 @@ async def generate_chat_response(prompt, user_data, toolbox=TOOLBOX):
     """Generiert eine Antwort auf eine Textnachricht mit dem OpenAI Modell."""
 
     user_id = user_data["user_id"]
+
     chat_history = user_data["chat_history"]
 
     # TODO: hier könnte tool filtering stattfinden

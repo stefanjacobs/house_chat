@@ -8,14 +8,20 @@ from src.telegram_user_id_manager import user_id_manager
 from src.ai_responses import generate_chat_response, transcribe_audio
 from src.scheduler import my_scheduler
 
-import logging
+import os, logging
+
+ALLOWED_USERS = [int(x) for x in os.getenv("ALLOWED_USERS").split(",") if x.isnumeric()]
 
 async def handle_audio(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Audionachrichten von Telegram."""
-    global USER_DATA
+    global USER_DATA, ALLOWED_USERS
 
     # Herunterladen der Audiodatei als Bytearray
     user_id = update.message.chat_id
+
+    if not user_id in ALLOWED_USERS:
+        return await update.message.reply_text("Nothing interesting going on here, please move on.")
+
     if not user_id in USER_DATA:
         await create_user_data(user_id)
     audio_file = await update.message.voice.get_file()
@@ -26,16 +32,20 @@ async def handle_audio(update: Update, context: CallbackContext):
     # await update.message.reply_text(markdownify(f"Transkribierter Text: {text}"), parse_mode="MarkdownV2")
 
     ai_response = await generate_chat_response(text, USER_DATA[user_id])
-    await update.message.reply_text(markdownify(ai_response), parse_mode="MarkdownV2")
+    return await update.message.reply_text(markdownify(ai_response), parse_mode="MarkdownV2")
 
 
 async def handle_text(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Textnachrichten von Telegram."""
-    global USER_DATA
+    global USER_DATA, ALLOWED_USERS
 
     # Textnachricht des Benutzers
     user_message = update.message.text
     user_id = update.message.chat_id
+
+    if not user_id in ALLOWED_USERS:
+        return await update.message.reply_text("Nothing interesting going on here, please move on.")
+
     if not user_id in USER_DATA:
         await create_user_data(user_id)
 
@@ -47,9 +57,13 @@ async def handle_text(update: Update, context: CallbackContext):
 async def start(update: Update, context: CallbackContext):
     """Begrüßt den Benutzer mit einer Nachricht."""
     global user_id_manager
-    global USER_DATA
+    global USER_DATA, ALLOWED_USERS
 
     user_id = update.message.chat_id
+
+    if not user_id in ALLOWED_USERS:
+        return await update.message.reply_text("Nothing interesting going on here, please move on.")
+
     await create_user_data(user_id)
     await user_id_manager.add_user(user_id)
     await update.message.reply_text(markdownify('Hallo! Ich bin dein Hauself Dobbi.'), parse_mode="MarkdownV2")
