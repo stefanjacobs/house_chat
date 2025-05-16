@@ -10,7 +10,7 @@ from src.scheduler import my_scheduler
 
 import os, logging
 
-ALLOWED_USERS = [int(x) for x in os.getenv("ALLOWED_USERS").split(",") if x.isnumeric()]
+ALLOWED_USERS = [int(x) for x in os.getenv("ALLOWED_TELEGRAM_USER_IDS").split(",") if x.isnumeric()]
 
 async def handle_audio(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Audionachrichten von Telegram."""
