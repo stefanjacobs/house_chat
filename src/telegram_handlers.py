@@ -9,18 +9,28 @@ from src.ai_responses import generate_chat_response, transcribe_audio
 from src.scheduler import my_scheduler
 
 import os, logging
+from functools import wraps
 
-ALLOWED_USERS = [int(x) for x in os.getenv("ALLOWED_TELEGRAM_USER_IDS").split(",") if x.isnumeric()]
 
+# Annotation zur Überprüfung der Benutzerberechtigung
+def require_allowed_user(func):
+    @wraps(func)
+    async def wrapper(update: Update, context: CallbackContext, *args, **kwargs):
+        allowed_user_ids = [int(x) for x in os.getenv("ALLOWED_TELEGRAM_USER_IDS").split(",")]
+        if update.message.chat_id not in allowed_user_ids:
+            await update.message.reply_text(markdownify("Du bist nicht berechtigt, diesen Bot zu verwenden."), parse_mode="MarkdownV2")
+            return
+        return await func(update, context, *args, **kwargs)
+    return wrapper
+
+
+@require_allowed_user
 async def handle_audio(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Audionachrichten von Telegram."""
-    global USER_DATA, ALLOWED_USERS
+    global USER_DATA
 
     # Herunterladen der Audiodatei als Bytearray
     user_id = update.message.chat_id
-
-    if not user_id in ALLOWED_USERS:
-        return await update.message.reply_text("Nothing interesting going on here, please move on.")
 
     if not user_id in USER_DATA:
         await create_user_data(user_id)
@@ -35,16 +45,14 @@ async def handle_audio(update: Update, context: CallbackContext):
     return await update.message.reply_text(markdownify(ai_response), parse_mode="MarkdownV2")
 
 
+@require_allowed_user
 async def handle_text(update: Update, context: CallbackContext):
     """Verarbeitet empfangene Textnachrichten von Telegram."""
-    global USER_DATA, ALLOWED_USERS
+    global USER_DATA
 
     # Textnachricht des Benutzers
     user_message = update.message.text
     user_id = update.message.chat_id
-
-    if not user_id in ALLOWED_USERS:
-        return await update.message.reply_text("Nothing interesting going on here, please move on.")
 
     if not user_id in USER_DATA:
         await create_user_data(user_id)
@@ -54,21 +62,20 @@ async def handle_text(update: Update, context: CallbackContext):
     await update.message.reply_text(markdownify(ai_response), parse_mode="MarkdownV2")
 
 
+@require_allowed_user
 async def start(update: Update, context: CallbackContext):
     """Begrüßt den Benutzer mit einer Nachricht."""
     global user_id_manager
-    global USER_DATA, ALLOWED_USERS
+    global USER_DATA
 
     user_id = update.message.chat_id
-
-    if not user_id in ALLOWED_USERS:
-        return await update.message.reply_text("Nothing interesting going on here, please move on.")
 
     await create_user_data(user_id)
     await user_id_manager.add_user(user_id)
     await update.message.reply_text(markdownify('Hallo! Ich bin dein Hauself Dobbi.'), parse_mode="MarkdownV2")
 
 
+@require_allowed_user
 async def reset(update: Update, context: CallbackContext):
     """Setzt den Chatverlauf zurück."""
     global USER_DATA
