@@ -134,7 +134,7 @@ async def get_news() -> Annotated[str, "Generates relevant news based on the use
     """
     news_channel_rsss = dict({
         "techcrunch": "https://techcrunch.com/feed/",
-        "theverge": "https://www.theverge.com/rss/google/index.xml",
+        # "theverge": "https://www.theverge.com/rss/google/index.xml",
         "wired.com": "https://www.wired.com/feed/rss",
         "reuters": "https://news.google.com/rss/search?q=site%3Areuters.com&hl=en-US&gl=US&ceid=US%3Aen",
         "heise": "https://www.heise.de/rss/heise.rdf",
