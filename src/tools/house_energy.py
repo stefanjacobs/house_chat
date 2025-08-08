@@ -16,14 +16,14 @@ async def get_energy_house_data() -> Annotated[str, "The current energy data of 
     response.raise_for_status()
     response = response.json()
     result = dict()
-    result["battery"] = response["result"]["battery"]
-    result["batteryPower"] = response["result"]["battery"][0]["power"]
-    result["batterySoC"] = response["result"]["battery"][0]["soc"]
-    result["batteryCapacity"] = str(response["result"]["battery"][0]["capacity"]) + " kWh"
-    result["gridPower"] = response["result"]["grid"]["power"]
-    result["homePower"] = response["result"]["homePower"]
-    result["pvPower"] = response["result"]["pvPower"]
-    result["wallboxPower"] = response["result"]["loadpoints"][0]["chargePower"]
+    result["battery"] = response["battery"]
+    result["batteryPower"] = response["battery"][0]["power"]
+    result["batterySoC"] = response["battery"][0]["soc"]
+    result["batteryCapacity"] = str(response["battery"][0]["capacity"]) + " kWh"
+    result["gridPower"] = response["grid"]["power"]
+    result["homePower"] = response["homePower"]
+    result["pvPower"] = response["pvPower"]
+    result["wallboxPower"] = response["loadpoints"][0]["chargePower"]
 
     result["system-instruction"] = "Please write a proper text summary for the energy data. If possible, do not use bullet points. Instead write a short and concise flowing text that is easy to read."
     return json.dumps(result)
@@ -45,7 +45,7 @@ async def get_energy_prices() -> Annotated[str, "A list of hourly energy prices 
     response = response.json()
 
     # filter response object based on the current date and time: 
-    rates = [x for x in response["result"]["rates"] if datetime.strptime(x["end"], "%Y-%m-%dT%H:%M:%S%z") >= now]
+    rates = [x for x in response["rates"] if datetime.strptime(x["end"], "%Y-%m-%dT%H:%M:%S%z") >= now]
 
     response_obj = dict()
     response_obj["rates"]= rates
@@ -75,9 +75,9 @@ async def get_wallbox_status() -> Annotated[str, "Der aktuelle Status der Wallbo
     url = EVCC_URI + "/api/state"
     response = await asyncio.to_thread(requests.get, url)
     r = json.loads(response.text)
-    result_mode = r["result"]["loadpoints"][0]["mode"]
-    result_charging = r["result"]["loadpoints"][0]["charging"]
-    result_power = r["result"]["loadpoints"][0]["chargePower"]
+    result_mode = r["loadpoints"][0]["mode"]
+    result_charging = r["loadpoints"][0]["charging"]
+    result_power = r["loadpoints"][0]["chargePower"]
     return json.dumps({"mode": result_mode, "charging": result_charging, "power": result_power})
 
 
