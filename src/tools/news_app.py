@@ -46,37 +46,92 @@ class NewsReaderApp:
     
     
     def _convert_to_datetime(self, published_parsed):
-        dt = datetime(*published_parsed[:6])
-        if published_parsed.tm_zone:
-            tz = pytz.timezone(published_parsed.tm_zone)
-            dt = tz.localize(dt)
+        """Safely convert a feedparser time struct to a timezone-aware datetime."""
+        try:
+            dt = datetime(*published_parsed[:6])
+        except Exception:
+            # Fall back to 'now' if the published time is missing or invalid
+            return datetime.now(self.tz)
+
+        tz_name = getattr(published_parsed, "tm_zone", None)
+        if tz_name:
+            try:
+                tz = pytz.timezone(tz_name)
+                dt = tz.localize(dt)
+            except Exception:
+                dt = self.tz.localize(dt)
         else:
             dt = self.tz.localize(dt)
         return dt
 
 
     def _feed_to_dict(self, feed):
-        news_dict = {
-            "title": feed.feed.title,
-            "link": feed.feed.link,
-            "entries": []
-        }
-        for entry in feed.entries:
+        """Convert a feedparser feed to a normalized dict, tolerating missing fields."""
+        feed_meta = getattr(feed, "feed", {})
+        title = (
+            getattr(feed_meta, "title", None)
+            or (feed_meta.get("title") if isinstance(feed_meta, dict) else None)
+            or ""
+        )
+        link = (
+            getattr(feed_meta, "link", None)
+            or (feed_meta.get("link") if isinstance(feed_meta, dict) else None)
+            or ""
+        )
+
+        news_dict = {"title": title, "link": link, "entries": []}
+
+        for entry in getattr(feed, "entries", []):
+            entry_title = (
+                getattr(entry, "title", None)
+                or (entry.get("title") if isinstance(entry, dict) else None)
+                or ""
+            )
+            entry_link = (
+                getattr(entry, "link", None)
+                or (entry.get("link") if isinstance(entry, dict) else None)
+                or ""
+            )
+
+            published_parsed = (
+                getattr(entry, "published_parsed", None)
+                or (entry.get("published_parsed") if isinstance(entry, dict) else None)
+                or getattr(entry, "updated_parsed", None)
+                or (entry.get("updated_parsed") if isinstance(entry, dict) else None)
+            )
+            try:
+                published_dt = self._convert_to_datetime(published_parsed) if published_parsed else datetime.now(self.tz)
+                published_str = published_dt.isoformat()
+            except Exception:
+                published_str = datetime.now(self.tz).isoformat()
+
+            summary = (
+                getattr(entry, "summary", None)
+                or getattr(entry, "description", None)
+                or (entry.get("summary") if isinstance(entry, dict) else None)
+                or ""
+            )
+
             news_entry = {
-                "title": entry.title,
-                "link": entry.link,
-                "published": str(self._convert_to_datetime(entry.published_parsed)),
-                "summary": entry.summary
+                "title": entry_title,
+                "link": entry_link,
+                "published": published_str,
+                "summary": summary,
             }
             news_dict["entries"].append(news_entry)
         return news_dict
 
 
     def _filter(self, feed_dict, time_delta):
+        """Filter entries to only those newer than now - time_delta."""
         filtered_entries = []
-        for entry in feed_dict["entries"]:
-            entry_time = datetime.strptime(entry["published"], "%Y-%m-%d %H:%M:%S%z")
-            if entry_time > datetime.now(self.tz) - time_delta:
+        now = datetime.now(self.tz)
+        for entry in feed_dict.get("entries", []):
+            try:
+                entry_time = datetime.fromisoformat(entry.get("published", now.isoformat()))
+            except Exception:
+                entry_time = now
+            if entry_time > now - time_delta:
                 filtered_entries.append(entry)
         feed_dict["entries"] = filtered_entries
         return feed_dict
