@@ -83,10 +83,26 @@ class NewsReaderApp:
 
     
     async def get_news(self, url, top=3):
-        response = await asyncio.to_thread(requests.get, url)
-        response.raise_for_status()
-
-        feed = feedparser.parse(response.text)
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/120.0 Safari/537.36"
+            ),
+            "Accept": "application/rss+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+        }
+        # Try fetching via requests with browser-like headers; fall back to feedparser fetching.
+        try:
+            response = await asyncio.to_thread(
+                requests.get, url, headers=headers, timeout=(5, 10)
+            )
+            response.raise_for_status()
+            feed = feedparser.parse(response.content)
+        except Exception:
+            # Fallback: let feedparser fetch directly (supports passing headers).
+            feed = feedparser.parse(url, request_headers=headers)
         feed = self._feed_to_dict(feed)
         feed = self._filter(feed, timedelta(hours=13))
 
@@ -165,4 +181,3 @@ async def get_news() -> Annotated[str, "Generates relevant news based on the use
 # if __name__ == "__main__":
 #     news = asyncio.run(get_news())
 #     print(news)
-
